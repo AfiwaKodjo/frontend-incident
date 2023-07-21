@@ -1,0 +1,50 @@
+<div class="row">
+    <div class="col-12 col-lg-3 mb-3 ms-auto">
+        <div class="text-center px-xl-3">
+          <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2" >Ajout incident</button>
+        </div>
+    </div>
+    </div>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<div class="container mt-3">
+    <h2>Liste des incidents</h2>          
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Description</th>
+          <th>Canal incident</th>
+          <th>Priorité</th>
+          <th>Client</th>
+          <th>Agence</th>
+          <th>téléphone</th>
+          <th>procédure</th>
+          <th>Libellé</th>
+          <th>Date création</th>
+          <th>Date clôture</th>
+          <th colspan="2">Vos actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let incident of incidents">
+          <td>{{incident.nomIncident}}</td>
+          <td>{{incident.descriptionIncident}}</td>
+          <td>{{incident.canalIncident}}</td>
+          <td>{{incident.prioriteIncident}}</td>
+          <td>{{incident.client.nomClient}}</td>
+          <td>{{incident.agence.lieuAgence}}</td>
+          <td>{{incident.agence.telephoneAgence}}</td>
+          <td>{{incident.procedure.nomProcedure}}</td>
+          <td>{{incident.procedure.libelleProcedure}}</td>
+          <td>{{incident.dateCreationIncident}}</td>
+          <td>{{incident.dateClotureIncident}}</td>
+            <td>
+            <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" ><i class="fa fa-edit" style="color:royalblue;"></i> </button>
+            </td>
+            <td>
+            <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0"><i class="fa fa-trash" style="color: red;"></i> </button>
+        </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
