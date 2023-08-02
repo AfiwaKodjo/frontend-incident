@@ -6,45 +6,176 @@
     </div>
     </div>
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-<div class="container mt-3">
+<div class="container mt-3" id="main-container">
     <h2>Liste des incidents</h2>          
     <table class="table table-striped">
       <thead>
         <tr>
           <th>Nom</th>
-          <th>Description</th>
-          <th>Canal incident</th>
+          <!--th>Description</th-->
+          <th>Canal de l'incident</th>
           <th>Priorité</th>
           <th>Client</th>
           <th>Agence</th>
           <th>téléphone</th>
-          <th>procédure</th>
-          <th>Libellé</th>
-          <th>Date création</th>
-          <th>Date clôture</th>
-          <th colspan="2">Vos actions</th>
+          <!--th>procédure</th>
+          <th>Libellé</th-->
+          <th>Statut de l'incident</th>
+          <th>Date de création</th>
+          <th>Date de clôture</th>
+          <th>Technicien</th>
+          <th>Vos actions</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let incident of incidents">
           <td>{{incident.nomIncident}}</td>
-          <td>{{incident.descriptionIncident}}</td>
+          <!--td>{{incident.descriptionIncident}}</td-->
           <td>{{incident.canalIncident}}</td>
-          <td>{{incident.prioriteIncident}}</td>
-          <td>{{incident.client.nomClient}}</td>
+          <td style="color: green;"><b>{{incident.prioriteIncident}}</b></td>
+          <td>{{incident.agence.client.nomClient}}</td>
           <td>{{incident.agence.lieuAgence}}</td>
           <td>{{incident.agence.telephoneAgence}}</td>
-          <td>{{incident.procedure.nomProcedure}}</td>
-          <td>{{incident.procedure.libelleProcedure}}</td>
+          <!--td>{{incident.procedure.nomProcedure}}</td>
+          <td>{{incident.procedure.libelleProcedure}}</td-->
+          <td style="color: black;"><b>{{incident.statutIncident}}</b></td>
           <td>{{incident.dateCreationIncident}}</td>
           <td>{{incident.dateClotureIncident}}</td>
+          <td><b>{{incident.agence.client.utilisateur.nom}}</b></td>
             <td>
-            <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" ><i class="fa fa-edit" style="color:royalblue;"></i> </button>
-            </td>
-            <td>
-            <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0"><i class="fa fa-trash" style="color: red;"></i> </button>
+            <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" (click)="updateIncident(incident.idIncident)"><i class="fa fa-edit" style="color:royalblue;"></i> </button>
+            <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" (click)="onOpenModal(incident,'delete')" data-placement="top" data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash" style="color: red;"></i> </button>
+            <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" (click)="incidentDetails(incident.idIncident)"><i class="fa fa-plus" style="color: green;"></i> </button>
+
         </td>
         </tr>
       </tbody>
     </table>
+  </div>
+
+
+  <div class="modal fade" role="dialog" tabindex="-1" id="user-form-modal2">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Ajout d'incident</h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="py-1">
+            <form class="form"  (ngSubmit)="onSubmit()">
+              <div class="row">
+                <div class="col">
+                  <div class="row">
+                    <div class="col">
+                    <div class="form-group">
+                        <label>Insérez un chiffre</label>
+                        <input class="form-control" type="number" name="idIncident" id="idIncident" min="1" placeholder="Chiffre" [(ngModel)]="incident.idIncident">
+                    </div>
+                    <br>
+                      <div class="form-group">
+                        <label>Nom de l'incident</label>
+                        <input class="form-control" type="text" name="nomIncident" placeholder="Nom incident" id="nomIncident" [(ngModel)]="incident.nomIncident">
+                      </div>
+                      <br>
+                      <div class="form-group">
+                      <label for="procedure" >Canal de l'incident</label>
+                      <select [(ngModel)]="incident.canalIncident"  class="form-select" name="canalIncident">
+                        <option [ngValue]="undefined">--Sélectionnez un canal--</option>
+                        <option>Mail</option>
+                        <option>Téléphone</option>
+                      </select>
+                      </div>
+                      <br>             
+                      <div class="form-group">
+                        <label for="procedure" >Priorité de l'incident</label>
+                        <select [(ngModel)]="incident.prioriteIncident"  class="form-select" name="prioriteIncident">
+                          <option [ngValue]="undefined">--Sélectionnez une priorité--</option>
+                          <option>Critique</option>
+                          <option>Haute</option>
+                          <option>Moyenne</option>
+                          <option>Basse</option>
+                        </select>
+                        </div>
+                      <br>
+                      <div class="form-group">
+                        <label for="procedure" >Statut de l'incident</label>
+                        <select [(ngModel)]="incident.statutIncident"  class="form-select" name="statutIncident">
+                          <option [ngValue]="undefined">--Sélectionnez un statut--</option>
+                          <option>Attente</option>
+                          <option>En_cours</option>
+                          <option>Terminé</option>
+                        </select>
+                        </div>      
+                      <br>
+                      <div class="form-group">
+                        <label>Description de l'incident</label>
+                        <textarea class="form-control" type="textarea" name="descriptionIncident" placeholder="Décrivez l'incident" id="descriptionIncident" rows="3" [(ngModel)]="incident.descriptionIncident" ></textarea>
+                        <br>
+                            <div class="form-group">
+                              <label>Date de début de l'incident</label>
+                              <input class="form-control" type="datetime-local" name="dateCreationIncident" placeholder="Début incident" id="dateCreationIncident" [(ngModel)]="incident.dateCreationIncident">
+                            </div>
+                     
+                        
+                      <h3><b>Agence</b></h3>
+                      <div class="form-group">
+                        <label for="agence" class="col-form-label col-sm-2">Agence</label>
+                        <select [(ngModel)]="incident.agence"  class="form-control" name="agence">
+                          <option [ngValue]="undefined">--Sélectionnez une agence--</option>
+                          <option *ngFor="let agence of agences" [ngValue]="agence">{{agence?.lieuAgence}}</option>
+                        </select>
+                      </div>    
+                      <h3><b>Procédure</b></h3>
+                      <div class="form-group">
+                        <label for="procedure" class="col-form-label col-sm-2">Procedure</label>
+                        <select [(ngModel)]="incident.procedure"  class="form-control" name="procedure">
+                          <option [ngValue]="undefined">--Sélectionnez une procédure--</option>
+                          <option *ngFor="let procedure of procedures" [ngValue]="procedure">{{procedure?.nomProcedure}}</option>
+                        </select>
+                      </div> 
+                      <br>
+                      <div class="form-group">
+                        <label>Date de clôture de l'incident</label>
+                        <input class="form-control" type="datetime-local" name="dateClotureIncident" placeholder="Clôture incident" id="dateClotureIncident" [(ngModel)]="incident.dateClotureIncident">
+                      </div>
+                <div class="col">
+                  </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                    </div>                   
+              <div class="modal-footer">
+                <button type="button" id="" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                  <button class="btn btn-primary" type="submit">Soumettre</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+   <!--Supprimer un incident-->
+   <div class="modal fade" id="deleteIncidentModal" tabindex="-1" aria-labelledby="delete" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fs-5" id="deleteIncidentModal">Suppression incident</h5>
+          <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer l'incident {{deleteIncident?.nomIncident}} ?</p>     
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Non</button>
+          <button type="button" (click)="onDeleteIncident(deleteIncident.idIncident)" class="btn btn-primary" data-dismiss="modal">Oui</button>
+        </div>
+      </div>
+    </div>
+  </div>
   </div>

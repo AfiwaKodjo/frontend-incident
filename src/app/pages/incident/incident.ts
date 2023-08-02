@@ -5,7 +5,6 @@ import { Utilisateurs } from "../utilisateurs/update-utilisateurs/utilisateurs";
 import { MesCanaux } from "./mes-canaux";
 import { MesPriorites } from "./mes-priorites";
 import { MesStatuts } from "./mes-statuts";
-import { DatePipe } from '@angular/common';
 
 
 export class Incident {

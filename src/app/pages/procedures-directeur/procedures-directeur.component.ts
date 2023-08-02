@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Procedure } from '../procedures/procedure';
 import { ProceduresService } from '../procedures/procedures.service';
 import { Utilisateurs } from '../utilisateurs/utilisateurs';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-procedures-directeur',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
 
 <div class="row">
@@ -22,7 +23,7 @@ import { Utilisateurs } from '../utilisateurs/utilisateurs';
         
             <div class="text-center px-xl-3">
                 <!--label>Filter par Nom:</label-->
-                <div><input type="search"
+                <div><input type="search" (ngModelChange)="searchProcedures(key.value )" #key="ngModel" ngModel
                  class="form-control w-100" id="searchNom " placeholder="search procedure..." name="key"  required></div>
               </div>
              
@@ -117,6 +118,24 @@ export class ProceduresDirecteurComponent implements OnInit{
     this.proceduresService.getProcedures().subscribe(data => {
       this.procedures = data;
     });
+  }
+
+  public searchProcedures(key: string): void{
+    console.log(key);
+      const results: Procedure[] = [];
+      for (const procedure of this.procedures){
+        if(procedure.nomProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1 
+        || procedure.libelleProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || procedure.utilisateur.nom.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || procedure.utilisateur.role.toLowerCase().indexOf(key.toLowerCase()) !== -1){
+          results.push(procedure);
+        }
+      } 
+      this.procedures = results;
+      if(results.length === 0 || !key){
+        this.getProcedures();
+      }
+
   }
 
 

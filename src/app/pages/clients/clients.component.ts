@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClientsService } from './clients.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Client } from './client';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UtilisateursService } from '../utilisateurs/utilisateurs.service';
 import { Utilisateurs } from '../utilisateurs/update-utilisateurs/utilisateurs';
@@ -15,16 +15,22 @@ import { Utilisateurs } from '../utilisateurs/update-utilisateurs/utilisateurs';
   providers: [ClientsService, UtilisateursService],
   template: `
 <div class="row">
-        <div class="col-12 col-lg-3 mb-3 ms-auto">
+        <div class="col-12 col-lg-3 mb-3">
             <div class="text-center px-xl-3">
               <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2" >Ajout client</button>
             </div>
         </div>
+
+    <div class="col-lg-2  mb-3 d-flex justify-content-end ms-auto">
+    <!-- Mettez ici votre barre de recherche -->
+    <input class="form-control w-100" (ngModelChange)="searchClients(key.value )" #key="ngModel" ngModel
+     type="search" placeholder="Search client..."  id="searchNom" name="key"  required>
+  </div>
         </div>
    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
    <div class="container mt-3">
     <h2>Liste des clients</h2>        
-    <table class="table table-striped">
+    <table class="table table-striped" id="main-container">
       <thead>
         <tr>
          <th>Nom client</th>
@@ -43,8 +49,8 @@ import { Utilisateurs } from '../utilisateurs/update-utilisateurs/utilisateurs';
           <td>{{client.emailClient}}</td>
           <td>{{client.utilisateur.nom}}</td>
           <td>
-            <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" ><i class="fa fa-edit" style="color: royalblue;"></i> </button>
-            <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0 mx-1" (click)="deleteClient(client.idClient)"><i class="fa fa-trash" style="color: red;"></i></button>
+            <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" (click)="updateClient(client.idClient)"><i class="fa fa-edit" style="color: royalblue;"></i> </button>
+            <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0 mx-1" (click)="onOpenModal(client,'delete')" data-placement="top" data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash" style="color: red;"></i></button>
             </td>
         </tr>
       </tbody>
@@ -86,11 +92,15 @@ import { Utilisateurs } from '../utilisateurs/update-utilisateurs/utilisateurs';
                         <br>
                         <div class="form-group">
                           <label>Contact client</label>
-                          <input class="form-control" type="text" name="contactClient" placeholder="(00228)/(00229) -- -- -- --" id="contactClient" maxlength="15" [(ngModel)]="client.contactClient">                        
+                          <input class="form-control" type="text" name="contactClient" placeholder="(00228)/(00229) -- -- -- --" id="contactClient" maxlength="15" [(ngModel)]="client.contactClient" (input)="filterOnlyNumbers($event)">                        
                           <br>
                         <div class="form-group">
                           <label>Email client</label>
-                          <input class="form-control" type="email" name="emailClient" placeholder="Email client" id="emailClient" [(ngModel)]="client.emailClient">
+                          <input class="form-control" type="email" name="emailClient" placeholder="Email client" id="emailClient" [(ngModel)]="client.emailClient" required email #emailInput="ngModel">
+                          <div *ngIf="emailInput.errors && (emailInput.dirty || emailInput.touched)" class="text-danger">
+                          <div *ngIf="emailInput?.errors?.['required']">L'e-mail est requis.</div>
+                          <div *ngIf="emailInput.errors?.['email']">L'e-mail saisi n'est pas valide.</div>
+                        </div>
                         </div>
                          <br>
                         <h3><b>Utilisateur</b></h3>
@@ -136,6 +146,28 @@ import { Utilisateurs } from '../utilisateurs/update-utilisateurs/utilisateurs';
         </div>
       </div>
     </div>
+
+
+    <!--Supprimer un client-->
+  <div class="modal fade" id="deleteClientModal" tabindex="-1" aria-labelledby="delete" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fs-5" id="deleteClientModal">Suppression client</h5>
+          <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer le client {{deleteClient?.nomClient}} ?</p>     
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Non</button>
+          <button type="button" (click)="onDeleteClient(deleteClient.idClient)" class="btn btn-primary" data-dismiss="modal">Oui</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
 
   `,
   styles: [
@@ -194,7 +226,13 @@ export class ClientsComponent implements OnInit{
   client: Client = new Client();
 
   utilisateurs: Utilisateurs[] = [];
-  constructor(private clientService: ClientsService, private router: Router, private route: ActivatedRoute) { }
+
+  client1 = {
+    emailClient: ''
+  };
+
+  public deleteClient!: Client;
+  constructor(private clientService: ClientsService, private router: Router, private route: ActivatedRoute, private elementRef: ElementRef) { }
 
   ngOnInit(): void {
 
@@ -217,8 +255,15 @@ export class ClientsComponent implements OnInit{
       console.log(data);
       this.getClients();
     },
-    error => console.log(error)
+    error => alert('Le client a été ajouté !!')
     )
+
+    
+    if (!this.isValidEmail(this.client1.emailClient)) {
+      console.log('E-mail invalide.');
+      return;
+    };
+
 
     }
 
@@ -253,13 +298,89 @@ export class ClientsComponent implements OnInit{
 
     }*/
 
-  deleteClient(idClient: number){
+ /* deleteClient(idClient: number){
     this.clientService.deleteClient(idClient).subscribe(data =>{
       console.log(data);
       this.getClients();
       console.log(this.getClients());
     })
+  }*/
+
+  public onDeleteClient(idClient: number): void{
+    this.clientService.deleteClient(idClient).subscribe(
+      (response: void) => {
+        console.log(response);
+        this.getClients();
+      },
+      (error: HttpErrorResponse) =>{
+        if (error.status === 500) {
+          alert("Suppression non autorisée. Revoyez l'agence !! ");
+       } else if (error.status === 200) {
+         alert("Le client a été bien supprimé !!");
+       } else
+       {
+         alert ("Erreur !!");
+       }
+      }
+
+      );
+    
   }
+
+  public onOpenModal(client: Client, mode: string): void{
+    const container = document.getElementById('main-container');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.style.display = 'none';
+    button.setAttribute('data-toggle', 'modal');
+    if(mode ==='delete'){
+      this.deleteClient = client;
+        button.setAttribute('data-target', '#deleteClientModal');
+    }
+    container!.appendChild(button);
+    button.click();
+   }
+
+   filterOnlyNumbers(event: any) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+    const pattern = /^[0-9]+$/;
+  
+    if (!pattern.test(value)) {
+      input.value = value.replace(/\D/g, '');
+    }
+  }
+
+ 
+  private isValidEmail(email: string): boolean {
+    // Effectuez vos validations personnalisées ici
+    // Par exemple, vérifiez le format de l'e-mail, s'il est unique dans la base de données, etc.
+    // Renvoyez true si l'e-mail est valide, sinon false
+    return true;
+  }
+ 
+  public searchClients(key: string): void{
+    console.log(key);
+      const results: Client[] = [];
+      for (const client of this.clients){
+        if(client.nomClient.toLowerCase().indexOf(key.toLowerCase()) !== -1 
+        || client.adresseClient.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || client.emailClient.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || client.utilisateur.nom.toLowerCase().indexOf(key.toLowerCase()) !== -1){
+          results.push(client);
+        }
+      } 
+      this.clients = results;
+      if(results.length === 0 || !key){
+        this.getClients();
+      }
+  
+  }
+
+  updateClient(idClient: number){
+    this.router.navigate(['admin/update-clients/idClient', idClient]);
+  }
+  
 
 
 }

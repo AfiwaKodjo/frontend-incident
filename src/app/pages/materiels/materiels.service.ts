@@ -25,4 +25,11 @@ export class MaterielsService {
     return this.httpClient.post(`${this.baseURL}/post`, materiel);
   }
 
+  getMaterielById(idMateriel: number): Observable<Materiel>{
+    return this.httpClient.get<Materiel>(`${this.baseURL}/${idMateriel}/get`);
+  }
+
+  public deleteMateriel(idMateriel: number): Observable <void>{
+    return this.httpClient.delete<void>(`${this.baseURL}/${idMateriel}/delete`)};
+
 }

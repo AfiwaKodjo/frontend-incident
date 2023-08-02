@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterielsService } from './materiels.service';
 import { Materiel } from './materiel';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Procedure } from '../procedures/procedure';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-materiels',
@@ -13,15 +14,21 @@ import { Procedure } from '../procedures/procedure';
   providers: [MaterielsService],
   template: `
   <div class="row">
-        <div class="col-12 col-lg-3 mb-3 ms-auto">
+        <div class="col-12 col-lg-3 mb-3">
             <div class="text-center px-xl-3">
               <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2" >Ajout matériel</button>
             </div>
         </div>
+
+    <div class="col-lg-2  mb-3 d-flex justify-content-end ms-auto">
+    <!-- Mettez ici votre barre de recherche -->
+    <input class="form-control w-100" (ngModelChange)="searchMateriels(key.value )" #key="ngModel" ngModel
+     type="search" placeholder="Search materiel..."  id="searchNom" name="key"  required>
+  </div>  
         </div>
    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
     <h2>Liste des matériels utilisés</h2>
-   <table class="table caption-top">
+   <table class="table caption-top" id='main-container'>
   <thead class="table-dark">
     <tr>
       <th scope="col">Nom du matériel</th>
@@ -42,8 +49,8 @@ import { Procedure } from '../procedures/procedure';
       <td><h3>{{materiel.procedure.nomProcedure}}</h3></td>
       <td><h3>{{materiel.procedure.libelleProcedure}}</h3></td>
       <td>
-      <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" ><i class="fa fa-edit" style="color: royalblue;"></i> </button>
-      <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0 mx-1"><i class="fa fa-trash" style="color: red;"></i> </button>
+      <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" (click)="updateMateriel(materiel.idMateriel)"><i class="fa fa-edit" style="color: royalblue;"></i> </button>
+      <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0 mx-1" (click)="onOpenModal(materiel,'delete')" data-placement="top" data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash" style="color: red;"></i> </button>
       </td>
     </tr>
     
@@ -110,7 +117,28 @@ import { Procedure } from '../procedures/procedure';
       </div>
     </div>
 
- 
+  <!--Supprimer un matériel-->
+  <div class="modal fade" id="deleteMaterielModal" tabindex="-1" aria-labelledby="delete" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fs-5" id="deleteIncidentModal">Suppression matériel</h5>
+          <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer le matériel {{deleteMateriel?.nomMateriel}} ?</p>     
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Non</button>
+          <button type="button" (click)="onDeleteMateriel(deleteMateriel.idMateriel)" class="btn btn-primary" data-dismiss="modal">Oui</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+
       `,
   styles: [
     `
@@ -166,7 +194,9 @@ export class MaterielsComponent implements OnInit{
 
   procedure: Procedure[] = [];
 
-  constructor(private materielsService: MaterielsService) { }
+  public deleteMateriel!: Materiel;
+
+  constructor(private materielsService: MaterielsService, private router: Router) { }
 
 
   public materiels: Materiel[] = [];
@@ -190,9 +220,66 @@ export class MaterielsComponent implements OnInit{
       console.log(data);
       this.getMateriels();
     },
-    error => console.log(error)
+    error => alert('Le matériel a été bien ajouté !!')
     )
 
     }
+
+    public onDeleteMateriel(idMateriel: number): void{
+      this.materielsService.deleteMateriel(idMateriel).subscribe(
+        (response: void) => {
+          console.log(response);
+          this.getMateriels();
+        },
+        (error: HttpErrorResponse) =>{
+          if (error.status === 500) {
+            alert("Suppression non autorisée. Revoyez le client!! ");
+         } else if (error.status === 200) {
+           alert("Le matériel a été bien supprimé.");
+         } else
+         {
+           alert ("Erreur !!");
+         }
+        }
+  
+        );
+      
+    }
+
+    public onOpenModal(materiel: Materiel, mode: string): void{
+      const container = document.getElementById('main-container');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.style.display = 'none';
+      button.setAttribute('data-toggle', 'modal');
+      if(mode ==='delete'){
+        this.deleteMateriel = materiel;
+          button.setAttribute('data-target', '#deleteMaterielModal');
+      }
+      container!.appendChild(button);
+      button.click();
+     }
+
+    public searchMateriels(key: string): void{
+      console.log(key);
+        const results: Materiel[] = [];
+        for (const materiel of this.materiels){
+          if(materiel.nomMateriel.toLowerCase().indexOf(key.toLowerCase()) !== -1 
+          || materiel.procedure.utilisateur.nom.toLowerCase().indexOf(key.toLowerCase()) !== -1
+          || materiel.procedure.utilisateur.prenom.toLowerCase().indexOf(key.toLowerCase()) !== -1
+          || materiel.procedure.nomProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1){
+            results.push(materiel);
+          }
+        } 
+        this.materiels = results;
+        if(results.length === 0 || !key){
+          this.getMateriels();
+        }
+    
+    }
+
+    updateMateriel(idMateriel: number){
+      this.router.navigate(['admin/update-materiels/idMateriel', idMateriel]);
+    }    
 
 }

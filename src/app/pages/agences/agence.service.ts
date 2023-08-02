@@ -32,8 +32,7 @@ private baseURL="http://localhost:8080/api/agences"
     return this.httpClient.put(`${this.baseURL}/${idAgence}/put`, agence);
   }
 
-  deleteAgence(idAgence: number): Observable<Object>{
-  return this.httpClient.delete(`${this.baseURL}/${idAgence}/delete`);
-  }
+  public deleteAgence(idAgence: number): Observable <void>{
+    return this.httpClient.delete<void>(`${this.baseURL}/${idAgence}/delete`)};
 
 }

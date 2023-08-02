@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IncidentsService } from '../incident/incidents.service';
 import { Incident } from '../incident/incident';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-incident-directeur',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  providers:[IncidentsService],
   template: `
   <div class="row">
         <div class="col-12 col-lg-3 mb-3 ml-auto">
@@ -20,7 +22,7 @@ import { Incident } from '../incident/incident';
         
             <div class="text-center px-xl-3">
                 <!--label>Filter par Nom:</label-->
-                <div><input type="search"
+                <div><input type="search" (ngModelChange)="searchIncidents(key.value)" #key="ngModel" ngModel
                  class="form-control w-100" id="searchNom " placeholder="search incident..." name="key"  required></div>
               </div>
              
@@ -41,6 +43,7 @@ import { Incident } from '../incident/incident';
           <th>téléphone</th>
           <th>procédure</th>
           <th>Libellé</th>
+          <th>Technicien</th>
           <th>Date création</th>
           <th>Date clôture</th>
         </tr>
@@ -50,12 +53,13 @@ import { Incident } from '../incident/incident';
           <td>{{incident.nomIncident}}</td>
           <td>{{incident.descriptionIncident}}</td>
           <td>{{incident.canalIncident}}</td>
-          <td>{{incident.prioriteIncident}}</td>
-          <td>{{incident.client.nomClient}}</td>
+          <td style="color: blue;"><b>{{incident.prioriteIncident}}</b></td>
+          <td>{{incident.agence.client.nomClient}}</td>
           <td>{{incident.agence.lieuAgence}}</td>
           <td>{{incident.agence.telephoneAgence}}</td>
           <td>{{incident.procedure.nomProcedure}}</td>
           <td>{{incident.procedure.libelleProcedure}}</td>
+          <td><b>{{incident.agence.client.utilisateur.nom}}</b></td>
           <td>{{incident.dateCreationIncident}}</td>
           <td>{{incident.dateClotureIncident}}</td>
         </tr>
@@ -124,6 +128,27 @@ export class IncidentDirecteurComponent implements OnInit{
       this.incidents = data;
     });
   }
+
+ public searchIncidents(key: string): void{
+    console.log(key);
+      const results: Incident[] = [];
+      for (const incident of this.incidents){
+        if(incident.nomIncident.toLowerCase().indexOf(key.toLowerCase()) !== -1 
+        || incident.agence.client.nomClient.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || incident.agence.client.utilisateur.nom.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || incident.agence.lieuAgence.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || incident.procedure.nomProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || incident.agence.client.utilisateur.nom.toLowerCase().toUpperCase().indexOf(key.toLowerCase()) !== -1){
+          results.push(incident);
+        }
+      } 
+      this.incidents = results;
+      if(results.length === 0 || !key){
+        this.getIncidents();
+      }
+
+  }
+
 
 
 }

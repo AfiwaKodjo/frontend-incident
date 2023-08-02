@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Procedure } from './procedure';
 import { ProceduresService } from './procedures.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Utilisateurs } from '../utilisateurs/utilisateurs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-procedures',
@@ -12,15 +13,31 @@ import { Utilisateurs } from '../utilisateurs/utilisateurs';
   imports: [CommonModule, HttpClientModule, FormsModule, ReactiveFormsModule],
   template: `
 
-<div class="row">
+<!--div class="row">
         <div class="col-12 col-lg-3 mb-3 ms-auto">
             <div class="text-center px-xl-3">
               <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2" >Ajout procédure</button>
             </div>
         </div>
-        </div>
+        </div-->
+
+        <div class="row">
+  <div class="col-12 col-lg-3 mb-3">
+    <div class="text-center px-xl-3">
+      <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2">Ajout procédure</button>
+    </div>
+  </div>
+
+  <div class="col-lg-2  mb-3 d-flex justify-content-end ms-auto">
+    <!-- Mettez ici votre barre de recherche -->
+    <input class="form-control w-100" (ngModelChange)="searchProcedures(key.value )" #key="ngModel" ngModel
+     type="search" placeholder="Search procedure..."  id="searchNom" name="key"  required>
+  </div>
+</div>
+
+     
    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-   <table class="table table-dark table-striped">
+   <table class="table table-dark table-striped" id='main-container'>
   <thead>
     <tr>
       <th scope="col">Libellé Procédure</th>
@@ -37,8 +54,8 @@ import { Utilisateurs } from '../utilisateurs/utilisateurs';
       <td><h2>{{procedure.utilisateur.nom}}</h2></td>
       <td><h2>{{procedure.utilisateur.role}}</h2></td>
       <td>
-      <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" ><i class="fa fa-edit" style="color: white;"></i> </button>
-      <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0 mx-1"><i class="fa fa-trash" style="color: red;" (click)="deleteProcedure(procedure.idProcedure)"></i> </button>
+      <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" (click)="updateProcedure(procedure.idProcedure)"><i class="fa fa-edit" style="color: white;"></i> </button>
+      <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0 mx-1"><i class="fa fa-trash" style="color: red;" (click)="onOpenModal(procedure,'delete')" data-placement="top" data-toggle="tooltip" data-original-title="Delete"></i> </button>
       </td>
     </tr>
     <tr>
@@ -103,6 +120,27 @@ import { Utilisateurs } from '../utilisateurs/utilisateurs';
         </div>
       </div>
     </div>
+
+    <!--Supprimer une démarche-->
+  <div class="modal fade" id="deleteProcedureModal" tabindex="-1" aria-labelledby="delete" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fs-5" id="deleteProcedureModal">Suppression procédure</h5>
+          <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer la procédure {{deleteProcedure?.nomProcedure}} ?</p>     
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Non</button>
+          <button type="button" (click)="onDeleteProcedure(deleteProcedure.idProcedure)" class="btn btn-primary" data-dismiss="modal">Oui</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
   `,
   styles: [`
   body{
@@ -155,8 +193,10 @@ export class ProceduresComponent implements OnInit{
 
   procedure: Procedure = new Procedure();
 
+  public deleteProcedure!: Procedure;
+
   utilisateurs: Utilisateurs[] = [];
-  constructor(private proceduresService: ProceduresService) { }
+  constructor(private proceduresService: ProceduresService, private router: Router) { }
 
   ngOnInit(): void {
     this.getProcedures();
@@ -178,15 +218,69 @@ export class ProceduresComponent implements OnInit{
       console.log(data);
       this.getProcedures();
     },
-    error => console.log(error)
+    error => alert('La procédure a été ajoutée !!')
     )
 
     }
 
-    deleteProcedure(idProcedure: number){
-      this.proceduresService.deleteProcedure(idProcedure).subscribe(data =>{
-        console.log(data);
-        this.getProcedures();
-      })
+
+    public onDeleteProcedure(idProcedure: number): void{
+      this.proceduresService.deleteProcedure(idProcedure).subscribe(
+        (response: void) => {
+          console.log(response);
+          this.getProcedures();
+        },
+        (error: HttpErrorResponse) =>{
+          if (error.status === 500) {
+            alert("Suppression non autorisée. Revoyez le matériel !! ");
+         } else if (error.status === 200) {
+           alert("La procédure a été bien supprimée !!");
+         } else
+         {
+           alert ("Erreur !!");
+         }
+        }
+  
+        );
+      
     }
+
+  
+
+public onOpenModal(procedure: Procedure, mode: string): void{
+  const container = document.getElementById('main-container');
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.style.display = 'none';
+  button.setAttribute('data-toggle', 'modal');
+  if(mode ==='delete'){
+    this.deleteProcedure = procedure;
+      button.setAttribute('data-target', '#deleteProcedureModal');
+  }
+  container!.appendChild(button);
+  button.click();
+ }
+
+
+ public searchProcedures(key: string): void{
+  console.log(key);
+    const results: Procedure[] = [];
+    for (const procedure of this.procedures){
+      if(procedure.nomProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1 
+      || procedure.libelleProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1
+      || procedure.utilisateur.nom.toLowerCase().indexOf(key.toLowerCase()) !== -1
+      || procedure.utilisateur.role.toLowerCase().indexOf(key.toLowerCase()) !== -1){
+        results.push(procedure);
+      }
+    } 
+    this.procedures = results;
+    if(results.length === 0 || !key){
+      this.getProcedures();
+    }
+
+}
+
+updateProcedure(idProcedure: number){
+  this.router.navigate(['admin/update-procedures/idProcedure', idProcedure]);
+} 
 }

@@ -31,7 +31,7 @@ export class AppComponent {
     SidebarComponent,
     TableComponent,
     BrowserAnimationsModule,
-    FormsModule
+    FormsModule,
  
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: ProjetInterceptor, multi: true }],

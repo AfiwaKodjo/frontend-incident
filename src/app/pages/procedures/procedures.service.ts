@@ -25,7 +25,11 @@ export class ProceduresService {
     return this.httpClient.post(`${this.baseURL}/post`, procedure);
   }
 
-  deleteProcedure(idProcedure: number): Observable<Object>{
-    return this.httpClient.delete(`${this.baseURL}/${idProcedure}/delete`);
+  getProcedureById(idProcedure: number): Observable<Procedure>{
+    return this.httpClient.get<Procedure>(`${this.baseURL}/${idProcedure}/get`);
+  }
+
+ public deleteProcedure(idProcedure: number): Observable<void>{
+    return this.httpClient.delete<void>(`${this.baseURL}/${idProcedure}/delete`);
     }
 }

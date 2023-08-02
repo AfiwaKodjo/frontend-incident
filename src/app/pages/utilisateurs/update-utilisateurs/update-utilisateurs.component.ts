@@ -241,8 +241,8 @@ export class UpdateUtilisateursComponent implements OnInit {
        console.log(data);
        this.goToUtilisateursList();
     },
-       error => console.log(error));
-      
+    error => alert('L\'utilisateur a été mis à jour !!')
+   )  
 
    }
 

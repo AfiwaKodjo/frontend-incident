@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/auth.service';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
@@ -38,12 +38,12 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       </a>
     </li><!-- End Search Icon-->
 
-    <li class="nav-item dropdown">
+    <!--li class="nav-item dropdown">
 
       <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
         <i class="bi bi-bell"></i>
         <span class="badge bg-primary badge-number">4</span>
-      </a><!-- End Notification Icon -->
+      </a>
 
       <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
         <li class="dropdown-header">
@@ -109,16 +109,16 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
           <a href="#">Show all notifications</a>
         </li>
 
-      </ul><!-- End Notification Dropdown Items -->
+      </ul>
 
-    </li><!-- End Notification Nav -->
+    </li-->
 
-    <li class="nav-item dropdown">
+    <!--li class="nav-item dropdown">
 
       <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
         <i class="bi bi-chat-left-text"></i>
         <span class="badge bg-success badge-number">3</span>
-      </a><!-- End Messages Icon -->
+      </a>
 
       <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
         <li class="dropdown-header">
@@ -175,13 +175,13 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
           <a href="#">Show all messages</a>
         </li>
 
-      </ul><!-- End Messages Dropdown Items -->
+      </ul><
 
-    </li><!-- End Messages Nav -->
+    </li-->
 
     <li class="nav-item dropdown pe-3">
 
-      <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+      <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-toggle="dropdown">
         <img src="assets/img/utilisateur.png" alt="Profile" class="rounded-circle">
         <span class="d-none d-md-block dropdown-toggle ps-2">Directeur</span>
       </a><!-- End Profile Iamge Icon -->
@@ -202,12 +202,25 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 </header>
 
   `,
-  styles: [
+  styles: [`
+  body {
+    padding: 25px;
+    background-color: white;
+    color: black;
+    font-size: 25px;
+  }
+  
+  .dark-mode {
+    background-color: black;
+    color: white;
+  }
+  
+  `
   ]
 })
 export class HeaderDirecteurComponent {
-  router: any;
-  constructor(private authService: AuthService) { }
+
+  constructor(private authService: AuthService, private router: Router) { }
 
   toggle(){
     const element = document.body as HTMLBodyElement

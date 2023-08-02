@@ -4,8 +4,8 @@ import { MesMouvements } from "./mes-mouvements";
 
 export class MouvementMateriel {
     idMouvement_Materiel!: number;
-    libelleMouvement_materiel!:MesMouvements;
-    quantiteMouvement_materiel!: number;
+    libelleMouvement_Materiel!:MesMouvements;
+    quantiteMouvement_Materiel!: number;
     materiel!: Materiel;
     incident!: Incident;
 

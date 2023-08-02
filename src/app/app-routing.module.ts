@@ -30,6 +30,12 @@ import { ProceduresDirecteurComponent } from './pages/procedures-directeur/proce
 import { MaterielsDirecteurComponent } from './pages/materiels-directeur/materiels-directeur.component';
 import { MaterielsTechnicienComponent } from './pages/materiels-technicien/materiels-technicien.component';
 import { ProceduresTechnicienComponent } from './pages/procedures-technicien/procedures-technicien.component';
+import { IncidentDetailsComponent } from './pages/incident/incident-details/incident-details.component';
+import { UpdateClientsComponent } from './pages/clients/update-clients/update-clients.component';
+import { UpdateIncidentComponent } from './pages/incident/update-incident/update-incident.component';
+import { UpdateMouvementMaterielsComponent } from './pages/mouvement-materiels/update-mouvement-materiels/update-mouvement-materiels.component';
+import { UpdateMaterielsComponent } from './pages/materiels/update-materiels/update-materiels.component';
+import { UpdateProceduresComponent } from './pages/procedures/update-procedures/update-procedures.component';
 
 
 const routes: Routes = [
@@ -80,7 +86,32 @@ const routes: Routes = [
     {
       path: 'mouvement-materiels',
       component: MouvementMaterielsComponent,
-    }
+    },
+
+    { path: 'incident-details/:idIncident',
+      component: IncidentDetailsComponent
+    },
+    {
+      path: 'update-clients/idClient/:idClient',
+      component: UpdateClientsComponent,
+    },
+    {
+      path: 'update-incidents/idIncident/:idIncident',
+      component: UpdateIncidentComponent,
+    },
+    {
+      path: 'update-mouvements/idMouvement_Materiel/:idMouvement_Materiel',
+      component: UpdateMouvementMaterielsComponent,
+    },
+    {
+      path: 'update-materiels/idMateriel/:idMateriel',
+      component: UpdateMaterielsComponent,
+    },
+    {
+      path: 'update-procedures/idProcedure/:idProcedure',
+      component: UpdateProceduresComponent,
+    },
+  
     ]
 },
 /*{

@@ -24,7 +24,6 @@ import { UpdateUtilisateursComponent } from './update-utilisateurs/update-utilis
             <hr class="my-1">
         
             <div class="text-center px-xl-3">
-                <!--label>Filter par Nom:</label-->
                 <div><input type="search" (ngModelChange)="searchUtilisateurs(key.value )" #key="ngModel" ngModel
                  class="form-control w-100" id="searchNom " placeholder="search utilisateur..." name="key"  required></div>
               </div>
@@ -355,6 +354,7 @@ export class UtilisateursComponent implements OnInit {
     
     updateUtilisateurs(id: number){
       this.router.navigate(['admin/update-utilisateurs/id', id]);
+  
     }
 
 
@@ -365,7 +365,14 @@ export class UtilisateursComponent implements OnInit {
           this.getUtilisateurs();
         },
         (error: HttpErrorResponse) =>{
-          console.log(error.message);
+          if (error.status === 500) {
+            alert("Suppression non autorisée. Vous avez des tâches à accomplir !! ");
+         } else if (error.status === 200) {
+           alert("L\'utilisateur a été bien supprimé !!");
+         } else
+         {
+           alert ("Erreur !!");
+         }
         }
   
         );

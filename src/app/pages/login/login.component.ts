@@ -151,13 +151,13 @@ export class LoginComponent {
               role.forEach((role1:any) => {
                 console.log(role1)
                 if (role1.authority==='ROLE_ADMIN'){
-                  this.router.navigate(['/admin']);
+                  this.router.navigate(['/admin/dashboard']);
                 }else if(role1.authority==='ROLE_TECHNICIEN'){
-                  this.router.navigate(['/technicien']);
+                  this.router.navigate(['/technicien/dashboardTechnicien']);
                 }else if(role1.authority==='ROLE_RESPONSABLE'){
-                  this.router.navigate(['/responsable'])
+                  this.router.navigate(['/responsable/dashboardResponsable'])
                 }else if(role1.authority==='ROLE_DIRECTEUR'){
-                  this.router.navigate(['/directeur'])
+                  this.router.navigate(['/directeur/dashboardDirecteur'])
                 }else
                 {
                   console.log('merci')
@@ -170,7 +170,7 @@ export class LoginComponent {
         },
         error => {
           console.error(error);
-          alert('Echec lors de la connexion. Patientez !');
+          alert('Echec lors de la connexion. Revoyez les données saisies !');
           // Gérer les erreurs de connexion
         }
       );

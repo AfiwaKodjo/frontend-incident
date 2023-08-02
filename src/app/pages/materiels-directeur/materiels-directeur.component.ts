@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterielsService } from '../materiels/materiels.service';
 import { Materiel } from '../materiels/materiel';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-materiels-directeur',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
   <div class="row">
         <div class="col-12 col-lg-3 mb-3 ml-auto">
@@ -20,7 +21,7 @@ import { Materiel } from '../materiels/materiel';
         
             <div class="text-center px-xl-3">
                 <!--label>Filter par Nom:</label-->
-                <div><input type="search" 
+                <div><input type="search" (ngModelChange)="searchMateriels(key.value )" #key="ngModel" ngModel
                  class="form-control w-100" id="searchNom " placeholder="search materiel..." name="key"  required></div>
               </div>
              
@@ -43,8 +44,8 @@ import { Materiel } from '../materiels/materiel';
     <tr *ngFor="let materiel of materiels">
       <td><h3>{{materiel.nomMateriel}}</h3></td>
       <td><h3>{{materiel.quantiteMateriel}}</h3></td>
-      <td><h3>{{materiel.utilisateur.nom}}</h3></td>
-      <td><h3>{{materiel.utilisateur.prenom}}</h3></td>
+      <td><h3>{{materiel.procedure.utilisateur.nom}}</h3></td>
+      <td><h3>{{materiel.procedure.utilisateur.prenom}}</h3></td>
       <td><h3>{{materiel.procedure.nomProcedure}}</h3></td>
       <td><h3>{{materiel.procedure.libelleProcedure}}</h3></td>
     </tr>
@@ -109,6 +110,25 @@ export class MaterielsDirecteurComponent implements OnInit{
     this.materielsService.getMateriels().subscribe(data => {
       this.materiels = data;
     });
+  }
+
+  public searchMateriels(key: string): void{
+    console.log(key);
+      const results: Materiel[] = [];
+      for (const materiel of this.materiels){
+        if(materiel.nomMateriel.toLowerCase().indexOf(key.toLowerCase()) !== -1 
+        || materiel.procedure.utilisateur.nom.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || materiel.procedure.utilisateur.prenom.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || materiel.procedure.nomProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        || materiel.procedure.libelleProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1){
+          results.push(materiel);
+        }
+      } 
+      this.materiels = results;
+      if(results.length === 0 || !key){
+        this.getMateriels();
+      }
+
   }
 
 }

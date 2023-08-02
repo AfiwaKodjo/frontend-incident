@@ -1,39 +1,40 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AgenceService } from '../agence.service';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Agence } from '../agence';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { AgencesComponent } from '../agences.component';
 
 @Component({
-  selector: 'app-update-agences',
+  selector: 'app-update-clients',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, HttpClientModule, UpdateAgencesComponent, AgencesComponent],
-  providers:[AgenceService],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   template: `
-    <div class="login-box">
-  <h2>Mise à jour de l'agence</h2>
-  <form (ngSubmit)="onSubmit()">
+ <div class="login-box">
+  <h2>Mise à jour du client</h2>
+  <form>
   <div class="user-box" >
-      <input type="number" name="idAgence" id="idAgence" required="" min="1" [(ngModel)]="agence.idAgence">
+      <input type="number" name="idClient" id="idClient" required="" min="1">
       <label>Numéro</label>
     </div>
     <div class="user-box">
-      <input type="text" name="lieuAgence" id="lieuAgence" required="" [(ngModel)]="agence.lieuAgence">
-      <label>Lieu de l'agence</label>
+      <input type="text" name="nomClient" id="nomClient" required="" >
+      <label>Nom du client</label>
     </div>
     <div class="user-box">
-      <input type="text" name="telephoneAgence" id="telephoneAgence"  required="" [(ngModel)]="agence.telephoneAgence">
-      <label>Téléphone de l'agence</label>
+      <input type="text" name="adresseClient" id="adresseClient" required="" >
+      <label>Adresse du client</label>
+    </div>
+    <div class="user-box">
+      <input type="text" name="contactClient" id="contactClient"  required="" >
+      <label>Contact du client</label>
+    </div>
+    <div class="user-box">
+      <input type="email" name="emailClient" id="emailClient"  required="" >
+      <label>Email du client</label>
     </div>
     <button class="btn btn-success" type="submit">Soumettre</button>
   </form>
 </div>
   `,
-  styles: [
-    `
+  styles: [`
     html {
   height: 100%;
 }
@@ -203,40 +204,10 @@ body {
   }
 }
 
-    `
+  
+  `
   ]
 })
-export class UpdateAgencesComponent implements OnInit{
-  idAgence!: number;
-  agence: Agence = new Agence();
-
-  constructor(private agenceService: AgenceService, private route: ActivatedRoute, private router: Router){ }
-
-  ngOnInit(): void {
-    this.idAgence =this.route.snapshot.params['idAgence'];
-
-    this.agenceService.getAgenceById(this.idAgence).subscribe(data => {
-      console.log(data);
-      this.agence= data;  
-    },
-    error => console.log(error)
-    );
-  }
-
-
-  onSubmit(){
-    this.agenceService.updateAgence(this.idAgence, this.agence).subscribe(data =>{
-      console.log(data);
-      alert("Mise à jour réussie !! ") 
-      this.goToAgenceList();
-    },
-       error => console.log(error));
-
-   }
-
-   goToAgenceList(){
-    this.router.navigate(['/admin/agences'])
-
-  }
+export class UpdateClientsComponent {
 
 }

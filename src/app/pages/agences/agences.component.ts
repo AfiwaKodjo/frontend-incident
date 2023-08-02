@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Agence } from './agence';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AgenceService } from './agence.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Client } from '../clients/client';
 import { ClientsService } from '../clients/clients.service';
+
 
 @Component({
   selector: 'app-agences',
@@ -15,10 +16,16 @@ import { ClientsService } from '../clients/clients.service';
   providers:[AgenceService, ClientsService],
   template: `
 <div class="row">
-        <div class="col-12 col-lg-3 mb-3 ms-auto">
+        <div class="col-12 col-lg-3 mb-3">
             <div class="text-center px-xl-3">
               <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2" >Ajout agence</button>
             </div>
+            </div>
+            <div class="col-lg-2  mb-3 d-flex justify-content-end ms-auto">
+          <!-- Mettez ici votre barre de recherche -->
+          <input class="form-control w-100" (ngModelChange)="searchAgences(key.value )" #key="ngModel" ngModel
+          type="search" placeholder="Search agence..."  id="searchNom" name="key"  required>
+  </div>
         </div>
 
         <!--div class="col">
@@ -36,7 +43,7 @@ import { ClientsService } from '../clients/clients.service';
        
 
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-<div class="container">
+<div class="container" id="main-container">
 <div class="row">
     <div class="col-md-12">
         <div class="card">
@@ -50,6 +57,7 @@ import { ClientsService } from '../clients/clients.service';
                      
                       <th scope="col" class="border-0 text-uppercase font-medium">Lieu</th>
                       <th scope="col" class="border-0 text-uppercase font-medium">Téléphone</th>
+                      <th scope="col" class="border-0 text-uppercase font-medium">Client</th>
                       <th scope="col" class="border-0 text-uppercase font-medium">actions</th>
                     </tr>
                   </thead>
@@ -63,9 +71,13 @@ import { ClientsService } from '../clients/clients.service';
                       <td>
                         <h2 class="font-medium mb-0">{{agence.telephoneAgence}}</h2>
                       </td>
+
+                      <td>
+                        <h2 class="font-medium mb-0">{{agence.client.nomClient}}</h2>
+                      </td>
                       <td>
                         <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" (click)="updateAgence(agence.idAgence)"><i class="fa fa-edit" style="color: blue;"></i> </button>
-                        <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0 mx-1" (click)="deleteAgence(agence.idAgence)"><i class="fa fa-trash" style="color: red;"></i> </button>
+                        <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0 mx-1" (click)="onOpenModal(agence,'delete')" data-placement="top" data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash" style="color: red;"></i> </button>
                       </td>
                   </tr>                                       
                   </tbody>
@@ -153,16 +165,16 @@ import { ClientsService } from '../clients/clients.service';
                         <br>
                         <div class="form-group">
                           <label>Numéro de Téléphone</label>
-                          <input class="form-control" type="text" name="telephoneAgence" placeholder="(00228)/(00229) -- -- -- --" id="telephone" maxlength="15" [(ngModel)]="agence.telephoneAgence">
+                          <input class="form-control" type="text" name="telephoneAgence" placeholder="(00228)/(00229) -- -- -- --" id="telephone" maxlength="15" [(ngModel)]="agence.telephoneAgence" (input)="filterOnlyNumbers($event)">
                           <br>
                         <h3><b>Client</b></h3>
                         <div class="form-group">
-                          <label for="utilisateur" class="col-form-label col-sm-2">Client</label>
+                          <label for="client" class="col-form-label col-sm-2">Client</label>
                           <select [(ngModel)]="agence.client" class="form-control" name="client">
                             <option [ngValue]="undefined">--Sélectionnez un client--</option>
-                            <option *ngFor="let client of client" [ngValue]="client">{{client.nomClient}}</option>
+                            <option *ngFor="let client of clients" [ngValue]="client">{{client.nomClient}}</option>
                           </select>
-                        </div>
+                        </div> 
                           
       <div class="col">
       </div>
@@ -182,6 +194,29 @@ import { ClientsService } from '../clients/clients.service';
         </div>
       </div>
     </div>
+
+<!--Supprimer une agence-->
+<div class="modal fade" id="deleteAgenceModal" tabindex="-1" aria-labelledby="delete" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fs-5" id="deleteAgenceModal">Suppression agence</h5>
+          <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer l'agence {{deleteAgence?.lieuAgence}} ?</p>     
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Non</button>
+          <button type="button" (click)="onDeleteAgence(deleteAgence.idAgence)" class="btn btn-primary" data-dismiss="modal">Oui</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+
   `,
   styles: [`
    body{
@@ -234,17 +269,16 @@ export class AgencesComponent implements OnInit{
 
   agence: Agence = new Agence();
 
-  client: Client[] = [];
-  clientsService: any;
-  utilisateurs: any;
+  clients: Client[] = [];
+  public deleteAgence!: Agence;
 
-  constructor(private agenceService: AgenceService, private router: Router, private route: ActivatedRoute) {
+  constructor(private agenceService: AgenceService, private router: Router, private route: ActivatedRoute, private elementRef: ElementRef) {
 
    }
 
   ngOnInit(): void {
    this.getAgences();
-   this.clientsService.getUtilisateurs().subscribe((response: any) => this.utilisateurs = response);
+   this.agenceService.getClients().subscribe((response: any) => this.clients = response);
 
   }
 
@@ -284,22 +318,78 @@ alert("Ajout réussi");
 
 onSubmit(){ 
   console.log(this.agence);
-  let agenceModel: any = {idAgence: this.agence.idAgence, lieuAgence: this.agence.lieuAgence, client: {idClient: this.agence.client.idClient, nomClient: this.agence.client.nomClient, adresseClient: this.agence.client.adresseClient, contactClient: this.agence.client.contactClient, emailClient: this.agence.client.emailClient, utilisateur:{id: this.agence.client.utilisateur.id, nom: this.agence.client.utilisateur.nom, prenom: this.agence.client.utilisateur.prenom, mot_de_passe: this.agence.client.utilisateur.mot_de_passe, email: this.agence.client.utilisateur.email, role: this.agence.client.utilisateur.role }}}
-  console.log(agenceModel)
-  /*this.agenceService.createAgence(agenceModel).subscribe(data =>{
+  let agenceModel: any = {idAgence: this.agence.idAgence, lieuAgence: this.agence.lieuAgence, telephoneAgence: this.agence.telephoneAgence, client: {idClient: this.agence.client.idClient, nomClient: this.agence.client.nomClient, adresseClient: this.agence.client.adresseClient, contactClient: this.agence.client.contactClient, emailClient: this.agence.client.emailClient, utilisateur:{id: this.agence.client.utilisateur.id, nom: this.agence.client.utilisateur.nom, prenom: this.agence.client.utilisateur.prenom, mot_de_passe: this.agence.client.utilisateur.mot_de_passe, email: this.agence.client.utilisateur.email, role: this.agence.client.utilisateur.role }}}
+ console.log(agenceModel)
+  this.agenceService.createAgence(agenceModel).subscribe(data =>{
     console.log(data);
     this.getAgences();
   },
-  error => console.log(error)
-  )*/
+  error => alert('L\'agence a été ajoutée !!')
+  )
 
   }
 
-deleteAgence(idAgence: number){
-  this.agenceService.deleteAgence(idAgence).subscribe(data =>{
-    console.log(data);
-    this.getAgences();
-  })
+
+public onDeleteAgence(idAgence: number): void{
+  this.agenceService.deleteAgence(idAgence).subscribe(
+    (response: void) => {
+      console.log(response);
+      this.getAgences();
+    },
+    (error: HttpErrorResponse) =>{
+      if (error.status === 500) {
+        alert("Suppression non autorisée. Revoyez l'incident !! ");
+     } else if (error.status === 200) {
+       alert("L'agence a été bien supprimée !!");
+     } else
+     {
+       alert ("Erreur !!");
+     }
+    }
+
+    );
+  
 }
+
+public onOpenModal(agence: Agence, mode: string): void{
+  const container = document.getElementById('main-container');
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.style.display = 'none';
+  button.setAttribute('data-toggle', 'modal');
+  if(mode ==='delete'){
+    this.deleteAgence = agence;
+      button.setAttribute('data-target', '#deleteAgenceModal');
+  }
+  container!.appendChild(button);
+  button.click();
+ }
+
+ filterOnlyNumbers(event: any) {
+  const input = event.target as HTMLInputElement;
+  const value = input.value;
+  const pattern = /^[0-9]+$/;
+
+  if (!pattern.test(value)) {
+    input.value = value.replace(/\D/g, '');
+  }
+}
+
+public searchAgences(key: string): void{
+  console.log(key);
+    const results: Agence[] = [];
+    for (const agence of this.agences){
+      if(agence.lieuAgence.toLowerCase().indexOf(key.toLowerCase()) !== -1 
+      || agence.client.nomClient.toLowerCase().indexOf(key.toLowerCase()) !== -1){
+        results.push(agence);
+      }
+    } 
+    this.agences = results;
+    if(results.length === 0 || !key){
+      this.getAgences();
+    }
+
+}
+
 
 }
