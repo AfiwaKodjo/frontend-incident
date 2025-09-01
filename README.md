@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # GestionIncidents
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.2.
@@ -25,3 +26,7 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+=======
+# frontend-incident
+Frontend de l'application
+>>>>>>> e64a364e1db9e038c57607b2ae8b4401409bafee
