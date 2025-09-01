@@ -11,12 +11,12 @@ import { RouterModule } from '@angular/router';
 
 <ul class="sidebar-nav" id="sidebar-nav">
 
-  <li class="nav-item">
+  <!--li class="nav-item">
     <a class="nav-link collapsed" routerLink="/directeur/dashboardDirecteur">
       <i class="bi bi-grid"></i>
-      <span>Dashboard</span>
+      <span>Tableau de bord</span>
     </a>
-  </li>
+  </li-->
   
   <li class="nav-item">
     <a class="nav-link collapsed" routerLink="/directeur/incidentDirecteur">

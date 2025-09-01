@@ -1,26 +1,46 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
+import { MaterielsService } from '../materiels.service';
+import { Materiel } from '../materiel';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-update-materiels',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule,HttpClientModule],
+  providers: [MaterielsService],
   template: `
    <div class="login-box">
   <h2>Mise à jour du matériel</h2>
-  <form>
+  <form (ngSubmit)="onSubmit()">
   <div class="user-box" >
-      <input type="number" name="idMateriel" id="idMateriel" required="" min="1" >
+      <input type="number" name="idMateriel" id="idMateriel" required="" min="1" [(ngModel)]="materiel.idMateriel" >
       <label>Numéro</label>
     </div>
     <div class="user-box">
-      <input type="text" name="nomMateriel" id="nomMateriel" required="">
+      <input type="text" name="nomMateriel" id="nomMateriel" required="" [(ngModel)]="materiel.nomMateriel">
       <label>Nom du matériel</label>
     </div>
     <div class="user-box">
-      <input type="number" name="quantiteMateriel" id="quantiteMateriel" min="1" required="" >
-      <label>Quantité du matériel</label>
+      <input type="text" name="numeroSerie" id="numeroSerie" required="" [(ngModel)]="materiel.numeroSerie">
+      <label>Numéro modèle</label>
+    </div>
+     <label style="color: #40E0D0;">Type hôte machine</label>
+    <div class="user-box">
+                        <select [(ngModel)]="materiel.typeMachine"  class="form-select" name="typeMachine">
+                          <option [ngValue]="undefined">--Sélectionnez un type--</option>
+                          <option>GAB</option>
+                          <option>SERVEUR</option>
+                          <option>IMPRIMANTE</option>
+                        </select>
+                        </div> <br>   
+
+    <div class="user-box">
+      <input type="text" name="identifiMachine" id="identifiMachine" required="" [(ngModel)]="materiel.identifiMachine">
+      <label>Identifiant hôte machine</label>
     </div>
     <button class="btn btn-success" type="submit">Soumettre</button>
   </form>
@@ -202,6 +222,66 @@ body {
     `
   ]
 })
-export class UpdateMaterielsComponent {
+export class UpdateMaterielsComponent implements OnInit{
+  idMateriel!: number;
+  materiel: Materiel = new Materiel();
+
+  constructor(private materielService: MaterielsService, private route: ActivatedRoute, private router: Router){ }
+  ngOnInit(): void {
+    this.idMateriel =this.route.snapshot.params['idMateriel'];
+
+    this.materielService.getMaterielById(this.idMateriel).subscribe(data => {
+      console.log(data);
+      this.materiel= data;  
+    },
+    error => console.log(error)
+    );
+    
+  }
+
+  onSubmit(){
+    console.log(this.idMateriel);
+    console.log(this.materiel);
+    let materiel: any = {idMateriel: this.materiel.idMateriel, nomMateriel:this.materiel.nomMateriel,identifiMachine: this.materiel.identifiMachine, numeroSerie: this.materiel.numeroSerie, typeMachine: this.materiel.typeMachine, image: this.materiel.image}
+    console.log(materiel);
+    this.materielService.updateMateriel(this.idMateriel, materiel).subscribe(data =>{
+      console.log(data);
+      alert("Mise à jour réussie !! ") 
+      this.goToMaterielList();
+    },
+    (error: HttpErrorResponse) => {
+      if (error.status === 500) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur du serveur !! '
+        });
+        this.router.navigate(['/admin/materiels']);
+      } else  if (error.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'Le matériel a été mis à jour !!'
+        });
+        this.router.navigate(['/admin/materiels']);
+      }else 
+      {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur !!'
+        });
+        this.router.navigate(['/admin/materiels']);
+      }
+    }
+
+    
+    )
+
+  }
+
+  goToMaterielList(){
+    this.router.navigate(['/admin/materiels']);
+  }
 
 }

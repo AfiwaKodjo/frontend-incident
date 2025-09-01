@@ -20,6 +20,14 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+             "allowedCommonJsDependencies": [
+              "rxjs-compat",
+              "validator",
+              "twilio-video",
+              "chartjs",
+              "lodash",
+              "canvg"
+             ],
             "outputPath": "dist/gestion-incidents",
             "index": "src/index.html",
             "main": "src/main.ts",

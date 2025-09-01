@@ -1,29 +1,73 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Incident } from '../incident';
+import { IncidentsService } from '../incidents.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-update-incident',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  providers:[IncidentsService],
   template: `
-    <div class="login-box">
+  <div class="login-box">
   <h2>Mise à jour de l'incident</h2>
-  <form>
+  <form (ngSubmit)="onSubmit()">
   <div class="user-box" >
-      <input type="number" name="idProcedure" id="idProcedure" required="" min="1" >
+      <input type="number" name="idIncident" id="idIncident" required="" min="1" [(ngModel)]="incident.idIncident">
       <label>Numéro</label>
     </div>
     <div class="user-box">
-      <input type="text" name="nomProcedure" id="nomProcedure" required="">
-      <label>Nom de la procédure</label>
+      <input type="text" name="nomIncident" id="nomIncident" required="" [(ngModel)]="incident.nomIncident">
+      <label>Nom de l'incident</label>
     </div>
-    <label style="color: white; font-size: 16px;">Libellé de la procédure</label>
+    <label style="color: white; font-size: 16px;">Description de l'incident</label>
     <div class="user-box">
 
-      <textarea name="libelleProcedure" id="libelleProcedure" min="1" rows="4" cols="42" placeholder="Décrivez la procédure" required="" ></textarea>
+      <textarea name="descriptionIncident" id="descriptionIncident" min="1" rows="4" cols="56" placeholder="Décrivez l'incident" [(ngModel)]="incident.descriptionIncident" required="" ></textarea>
 
     </div>
+    <div class="user-box">
+      <input type="datetime-local" name="dateCreationIncident" id="dateCreationIncident" required="" [(ngModel)]="incident.dateCreationIncident">
+      <label>Date de création de l'incident</label>
+    </div>
+    <div class="user-box">
+      <input type="datetime-local" name="dateClotureIncident" id="dateClotureIncident" required="" [(ngModel)]="incident.dateClotureIncident">
+      <label>Date de clôture de l'incident</label>
+    </div>
+    <label style="color: white; font-size: 16px;">Priorité de l'incident</label>
+    <div class="user-box">
+    <select class="form-select" name="prioriteIncident" [(ngModel)]="incident.prioriteIncident">
+        <option [ngValue]="undefined">--Sélectionnez une priorité--</option>
+        <option>Critique</option>
+        <option>Haute</option>
+        <option>Moyenne</option>
+        <option>Basse</option>
+    </select>
+    </div>
+    <br>
+    <label style="color: white; font-size: 16px;">Statut de l'incident</label>
+    <div class="user-box">
+      <select  class="form-select" name="statutIncident" [(ngModel)]="incident.statutIncident">
+          <option [ngValue]="undefined">--Sélectionnez un statut--</option>
+          <option>Attente</option>
+          <option>En_cours</option>
+          <option>Terminé</option>
+      </select>
+    </div>
+    <br>
+    <label style="color: white; font-size: 16px;">Canal de l'incident</label>
+    <div class="user-box">
+      <select  class="form-select" name="canalIncident" [(ngModel)]="incident.canalIncident">
+        <option [ngValue]="undefined">--Sélectionnez un canal--</option>
+        <option>Mail</option>
+        <option>Téléphone</option>
+      </select>
+    </div>
+    <br>
     <button class="btn btn-success" type="submit">Soumettre</button>
   </form>
 </div>
@@ -43,9 +87,9 @@ body {
 
 .login-box {
   position: absolute;
-  top: 60%;
+  top: 80%;
   left: 50%;
-  width: 400px;
+  width: 500px;
   padding: 40px;
   transform: translate(-50%, -50%);
   background: rgba(0,0,0,.5);
@@ -204,6 +248,72 @@ body {
     `
   ]
 })
-export class UpdateIncidentComponent {
+export class UpdateIncidentComponent implements OnInit{
+  idIncident!: number;
+  incident: Incident = new Incident();
+
+  constructor(private incidentService: IncidentsService, private route: ActivatedRoute, private router: Router){ }
+  ngOnInit(): void {
+    this.idIncident =this.route.snapshot.params['idIncident'];
+
+    this.incidentService.getIncidentById(this.idIncident).subscribe(data => {
+      console.log(data);
+      this.incident= data;  
+    },
+    error => console.log(error)
+    );
+ 
+  }
+
+  onSubmit(){
+    console.log(this.idIncident);
+    console.log(this.incident);
+    let incident: any = {idIncident: this.incident.idIncident, nomIncident: this.incident.nomIncident,
+      descriptionIncident: this.incident.descriptionIncident, dateCreationIncident: this.incident.dateCreationIncident,
+      dateClotureIncident: this.incident.dateClotureIncident,prioriteIncident: this.incident.prioriteIncident, statutIncident: this.incident.statutIncident, canalIncident: this.incident.canalIncident,
+      agence: {idAgence: this.incident.agence.idAgence, lieuAgence: this.incident.agence.lieuAgence, telephoneAgence: this.incident.agence.telephoneAgence, client:{idClient: this.incident.agence.client.idClient, nomClient: this.incident.agence.client.nomClient, adresseClient: this.incident.agence.client.adresseClient, contactClient: this.incident.agence.client.contactClient, emailClient: this.incident.agence.client.emailClient,
+      utilisateur: {id: this.incident.agence.client.utilisateur.id, nom: this.incident.agence.client.utilisateur.nom, prenom: this.incident.agence.client.utilisateur.prenom, mot_de_passe: this.incident.agence.client.utilisateur.mot_de_passe, email: this.incident.agence.client.utilisateur.email, role: this.incident.agence.client.utilisateur.role}}},
+      procedure: {idProcedure: this.incident.procedure.idProcedure, nomProcedure: this.incident.procedure.nomProcedure, libelleProcedure: this.incident.procedure.libelleProcedure},
+    }
+    console.log(incident);
+    this.incidentService.updateIncident(this.idIncident,incident).subscribe(data =>{
+      console.log(data);
+      alert("Mise à jour réussie !! ") 
+      this.goToIncidentList();
+    },
+    (error: HttpErrorResponse) => {
+      if (error.status === 500) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur du serveur !! '
+        });
+        this.router.navigate(['/admin/incident']);
+      } else  if (error.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'L\'incident a été mis à jour !!'
+        });
+        this.router.navigate(['/admin/incident']);
+      }else 
+      {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur !!'
+        });
+        this.router.navigate(['/admin/incident']);
+      }
+    }
+    
+    )
+
+  }
+
+  goToIncidentList(){
+    this.router.navigate(['/admin/incident']);
+  }
+  
 
 }

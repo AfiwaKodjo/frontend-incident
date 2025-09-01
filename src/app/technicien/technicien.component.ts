@@ -12,7 +12,7 @@ import { SidebarTechnicienComponent } from '../layout/sidebar-technicien/sidebar
    <app-header-technicien></app-header-technicien>
    <app-sidebar-technicien></app-sidebar-technicien>
     <main id='main' class='main'>
-    <div class="pagetitle">
+    <!--div class="pagetitle">
       <h1>Dashboard</h1>
       <nav>
         <ol class="breadcrumb">
@@ -20,7 +20,7 @@ import { SidebarTechnicienComponent } from '../layout/sidebar-technicien/sidebar
           <li class="breadcrumb-item active">Dashboard</li>
         </ol>
       </nav>
-    </div> 
+    </div--> 
      <router-outlet></router-outlet> 
   </main>
   `,

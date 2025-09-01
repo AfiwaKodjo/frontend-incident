@@ -6,6 +6,7 @@ import { UtilisateursService } from './utilisateurs.service';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UpdateUtilisateursComponent } from './update-utilisateurs/update-utilisateurs.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-utilisateurs',
@@ -13,6 +14,26 @@ import { UpdateUtilisateursComponent } from './update-utilisateurs/update-utilis
   imports: [CommonModule, HttpClientModule, FormsModule, UpdateUtilisateursComponent],
   providers:[UtilisateursService],
   template: `
+  <section class="section dashboard">
+  <div class="row">
+
+    <!-- Left side columns -->
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="pagetitle">
+          <h1>Utilisateur</h1>
+          <br>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+              <li class="breadcrumb-item active">Utilisateur</li>
+            </ol>
+          </nav>
+        </div>
+      </div>          
+    </div>
+  </div>
+</section>
   <div class="row">
         <div class="col-12 col-lg-3 mb-3 ml-auto">
         <!--div class="card">
@@ -25,13 +46,14 @@ import { UpdateUtilisateursComponent } from './update-utilisateurs/update-utilis
         
             <div class="text-center px-xl-3">
                 <div><input type="search" (ngModelChange)="searchUtilisateurs(key.value )" #key="ngModel" ngModel
-                 class="form-control w-100" id="searchNom " placeholder="search utilisateur..." name="key"  required></div>
+                 class="form-control w-100" id="searchNom " placeholder=" RECHERCHE..." name="key"  required></div>
               </div>
              
             </div>
         </div>
   <!--/div-->
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+  <h2>Liste des utilisateurs</h2>
 <div class="container" id="main-container">
     <div class="row">
         <div *ngFor="let utilisateurs of utilisateurs" class="col-md-6 col-xl-3">
@@ -47,18 +69,29 @@ import { UpdateUtilisateursComponent } from './update-utilisateurs/update-utilis
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item"><i class="fa fa-envelope float-right"></i>Email : <a href="#">{{utilisateurs?.email}}</a></li>
-                    <li class="list-group-item" aria-label="Disabled input example" readonly><i class="bi bi-eye-fill float-right" ></i>Mot de passe : {{utilisateurs?.mot_de_passe}}</li>
+                    <!-- <li class="list-group-item" aria-label="Disabled input example" readonly><i class="bi bi-eye-fill float-right" ></i>Mot de passe : {{utilisateurs?.mot_de_passe}}</li> -->
                 </ul>
                 <div class="card-body">
-                    <div class="float-right btn-group btn-group-sm">
+                    <!--div class="float-right btn-group btn-group-sm">
                         <a (click)="updateUtilisateurs(utilisateurs.id)" data-bs-toggle="modal"  class="btn btn-primary tooltips" data-toggle="tooltip" data-original-title="Edit"><i class="fa fa-pencil"></i> </a>
                         <a (click)="onOpenModal(utilisateurs,'delete')" class="btn btn-secondary tooltips" data-placement="top" data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-times"></i></a>
+                    </div-->
+
+                    <div class="float-right btn-group btn-group-sm" *ngIf="!(utilisateurs.role === 'ADMIN' || utilisateurs.role === 'DIRECTEUR')">
+                        <a (click)="updateUtilisateurs(utilisateurs.id)" data-bs-toggle="modal" class="btn btn-primary tooltips" data-toggle="tooltip" data-original-title="Edit">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        <a (click)="onOpenModal(utilisateurs,'delete')" class="btn btn-secondary tooltips" data-placement="top" data-toggle="tooltip" data-original-title="Delete">
+                            <i class="fa fa-times"></i>
+                        </a>
                     </div>
-                    <ul class="social-links list-inline mb-0">
+
+
+                    <!--ul class="social-links list-inline mb-0">
                         <li class="list-inline-item"><a title="" data-placement="top" data-toggle="tooltip" class="tooltips" href="" data-original-title="Facebook"><i class="fa fa-facebook-f"></i></a></li>
                         <li class="list-inline-item"><a title="" data-placement="top" data-toggle="tooltip" class="tooltips" href="" data-original-title="Twitter"><i class="fa fa-twitter"></i></a></li>
                         <li class="list-inline-item"><a title="" data-placement="top" data-toggle="tooltip" class="tooltips" href="" data-original-title="Skype"><i class="fa fa-skype"></i></a></li>
-                    </ul>
+                    </ul-->
                 </div>
             </div>
         </div>
@@ -286,12 +319,14 @@ import { UpdateUtilisateursComponent } from './update-utilisateurs/update-utilis
     body{
       margin-top:20px;
       background: #f5f5f5;
+     
   }
   .card {
       border: none;
-      -webkit-box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+     -webkit-box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
       box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
       margin-bottom: 30px;
+      background-color:#a9a9a9;
   }
   .w-60 {
       width: 60px;
@@ -337,20 +372,6 @@ export class UtilisateursComponent implements OnInit {
         }*/
       )
     }
-
-   /* public onUpdateUtilisateurs(utilisateursId: number): void{
-      this.utilisateursService.updateUtilisateurs(utilisateursId).subscribe(
-        (response: Utilisateurs) => {
-          console.log(response);
-          this.getUtilisateurs();
-        },
-        (error: HttpErrorResponse) =>{
-          alert(error.message);
-        }
-  
-        );
-      
-    }*/ // Le vrai mais qui ne marche pas !!
     
     updateUtilisateurs(id: number){
       this.router.navigate(['admin/update-utilisateurs/id', id]);
@@ -364,15 +385,30 @@ export class UtilisateursComponent implements OnInit {
           console.log(response);
           this.getUtilisateurs();
         },
-        (error: HttpErrorResponse) =>{
+        (error: HttpErrorResponse) => {
           if (error.status === 500) {
-            alert("Suppression non autorisée. Vous avez des tâches à accomplir !! ");
-         } else if (error.status === 200) {
-           alert("L\'utilisateur a été bien supprimé !!");
-         } else
-         {
-           alert ("Erreur !!");
-         }
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur',
+              text: 'Suppression non autorisée. Vous avez des tâches à accomplir !!'
+            });
+            this.getUtilisateurs();
+          } else  if (error.status === 200) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Succès',
+              text: 'L\'utilisateur a été bien supprimé !!'
+            });
+            this.getUtilisateurs();
+          }else 
+          {
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur',
+              text: 'Erreur !!'
+            });
+            this.getUtilisateurs();
+          }
         }
   
         );

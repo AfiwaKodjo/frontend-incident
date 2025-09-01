@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UtilisateursService } from '../utilisateurs.service';
 import { Utilisateurs } from '../update-utilisateurs/utilisateurs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-update-utilisateurs',
@@ -32,10 +33,21 @@ import { Utilisateurs } from '../update-utilisateurs/utilisateurs';
       <input type="email" name="email" id="email" [(ngModel)]="utilisateurs.email"  required="">
       <label>Email</label>
     </div>
-    <div class="user-box">
+    <!--div class="user-box">
       <input type="text" name="role" id="role" [(ngModel)]="utilisateurs.role" required="">
       <label>Rôle</label>
+    </div-->
+    <label for="role" style=" font-size: 12px;
+  color: #40E0D0;">Rôle</label>
+    <div class="user-box">
+    <select name="role" id="role" [(ngModel)]="utilisateurs.role" required>
+        <option value="undefined" disabled selected>-- Sélectionnez un rôle --</option>
+        <option value="TECHNICIEN">TECHNICIEN</option>
+        <option value="RESPONSABLE">RESPONSABLE</option>
+        <option value="DIRECTEUR">DIRECTEUR</option>
+        </select>
     </div>
+<br>
     <button class="btn btn-success" type="submit">Soumettre</button>
   </form>
 </div>
@@ -230,7 +242,9 @@ export class UpdateUtilisateursComponent implements OnInit {
     },
     error => console.log(error)
     );
+
   }
+
 
   onSubmit(){
     console.log(this.id);
@@ -241,7 +255,31 @@ export class UpdateUtilisateursComponent implements OnInit {
        console.log(data);
        this.goToUtilisateursList();
     },
-    error => alert('L\'utilisateur a été mis à jour !!')
+    (error: HttpErrorResponse) => {
+      if (error.status === 500) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur du serveur !!'
+        });
+        this.goToUtilisateursList();
+      } else  if (error.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'L\'utilisateur a été mis à jour !!'
+        });
+        this.goToUtilisateursList();
+      }else 
+      {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur !!'
+        });
+        this.goToUtilisateursList();
+      }
+    }
    )  
 
    }

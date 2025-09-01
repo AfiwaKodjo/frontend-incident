@@ -10,6 +10,26 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   providers:[IncidentsService],
   template: `
+  <section class="section dashboard">
+  <div class="row">
+
+    <!-- Left side columns -->
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="pagetitle">
+          <h1>Incident</h1>
+          <br>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+              <li class="breadcrumb-item active">Incident</li>
+            </ol>
+          </nav>
+        </div>
+      </div>          
+    </div>
+  </div>
+</section>
   <div class="row">
         <div class="col-12 col-lg-3 mb-3 ml-auto">
         <!--div class="card">
@@ -23,14 +43,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
             <div class="text-center px-xl-3">
                 <!--label>Filter par Nom:</label-->
                 <div><input type="search" (ngModelChange)="searchIncidents(key.value)" #key="ngModel" ngModel
-                 class="form-control w-100" id="searchNom " placeholder="search incident..." name="key"  required></div>
+                 class="form-control w-100" id="searchNom " placeholder="RECHERCHE..." name="key"  required></div>
               </div>
              
             </div>
         </div>
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 <div class="container mt-3">
-    <h2>Liste des incidents</h2>          
+    <h2><b>Liste des incidents</b></h2>          
     <table class="table table-striped">
       <thead>
         <tr>
@@ -41,8 +61,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
           <th>Client</th>
           <th>Agence</th>
           <th>téléphone</th>
+          <th>Statut de l'incident</th>
           <th>procédure</th>
-          <th>Libellé</th>
+          <th>Description procédure</th>
           <th>Technicien</th>
           <th>Date création</th>
           <th>Date clôture</th>
@@ -53,10 +74,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
           <td>{{incident.nomIncident}}</td>
           <td>{{incident.descriptionIncident}}</td>
           <td>{{incident.canalIncident}}</td>
-          <td style="color: blue;"><b>{{incident.prioriteIncident}}</b></td>
+          <td style="color: green;"><b>{{incident.prioriteIncident}}</b></td>
           <td>{{incident.agence.client.nomClient}}</td>
           <td>{{incident.agence.lieuAgence}}</td>
           <td>{{incident.agence.telephoneAgence}}</td>
+          <td style="color: black;"><b>{{incident.statutIncident}}</b></td>
           <td>{{incident.procedure.nomProcedure}}</td>
           <td>{{incident.procedure.libelleProcedure}}</td>
           <td><b>{{incident.agence.client.utilisateur.nom}}</b></td>

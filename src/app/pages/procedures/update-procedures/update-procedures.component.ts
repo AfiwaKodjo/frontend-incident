@@ -1,28 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Procedure } from '../procedure';
+import { ProceduresService } from '../procedures.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-update-procedures',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  providers: [ProceduresService],
   template: `
     <div class="login-box">
   <h2>Mise à jour de la procédure</h2>
-  <form>
+  <form (ngSubmit)="onSubmit()">
   <div class="user-box" >
-      <input type="number" name="idProcedure" id="idProcedure" required="" min="1" >
+      <input type="number" name="idProcedure" id="idProcedure" required="" min="1" [(ngModel)]="procedure.idProcedure">
       <label>Numéro</label>
     </div>
     <div class="user-box">
-      <input type="text" name="nomProcedure" id="nomProcedure" required="">
+      <input type="text" name="nomProcedure" id="nomProcedure" required="" [(ngModel)]="procedure.nomProcedure">
       <label>Nom de la procédure</label>
     </div>
-    <label style="color: white; font-size: 16px;">Libellé de la procédure</label>
+    <label style="color: white; font-size: 16px;">Description de la procédure</label>
     <div class="user-box">
-
-      <textarea name="libelleProcedure" id="libelleProcedure" min="1" rows="4" cols="42" placeholder="Décrivez la procédure" required="" ></textarea>
-
+      <textarea name="libelleProcedure" id="libelleProcedure" min="1" rows="4" cols="42" placeholder="Décrivez la procédure" required="" [(ngModel)]="procedure.libelleProcedure" ></textarea>
     </div>
     <button class="btn btn-success" type="submit">Soumettre</button>
   </form>
@@ -202,6 +206,65 @@ body {
   `
   ]
 })
-export class UpdateProceduresComponent {
+export class UpdateProceduresComponent implements OnInit{
+  idProcedure!: number;
+  procedure: Procedure = new Procedure();
+
+  constructor(private procedureService: ProceduresService, private route: ActivatedRoute, private router: Router){ }
+  ngOnInit(): void {
+    this.idProcedure =this.route.snapshot.params['idProcedure'];
+
+    this.procedureService.getProcedureById(this.idProcedure).subscribe(data => {
+      console.log(data);
+      this.procedure= data;  
+    },
+    error => console.log(error)
+    );
+  }
+
+  onSubmit(){
+    console.log(this.idProcedure);
+    console.log(this.procedure);
+    let procedure: any = {idProcedure: this.procedure.idProcedure, nomProcedure: this.procedure.nomProcedure, libelleProcedure: this.procedure.libelleProcedure}
+    console.log(procedure);
+    this.procedureService.updateProcedure(this.idProcedure, procedure).subscribe(data =>{
+      console.log(data);
+      alert("Mise à jour réussie !! ") 
+      this.goToProcedureList();
+    },
+    (error: HttpErrorResponse) => {
+      if (error.status === 500) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur du serveur !! '
+        });
+      this.router.navigate(['/admin/procedures']);
+      } else  if (error.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'La procédure a été mise à jour !!'
+        });
+      this.router.navigate(['/admin/procedures']);
+      }else 
+      {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur !!'
+        });
+      this.router.navigate(['/admin/procedures']);
+      }
+    }
+    
+    )
+
+  }
+
+  goToProcedureList(){
+    this.router.navigate(['/admin/procedures']);
+  }
+
 
 }

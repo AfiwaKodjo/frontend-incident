@@ -11,12 +11,12 @@ import { RouterModule } from '@angular/router';
 
 <ul class="sidebar-nav" id="sidebar-nav">
 
-  <li class="nav-item">
+  <!--li class="nav-item">
     <a class="nav-link collapsed" routerLink="/technicien/dashboardTechnicien">
       <i class="bi bi-grid"></i>
-      <span>Dashboard</span>
+      <span>Tableau de bord</span>
     </a>
-  </li>
+  </li-->
   
   <li class="nav-item">
     <a class="nav-link collapsed" routerLink="/technicien/incidentTechnicien">
@@ -52,6 +52,14 @@ import { RouterModule } from '@angular/router';
     <a class="nav-link collapsed" routerLink="/technicien/proceduresTechnicien">
       <i class="bi bi-book"></i>
       <span>Procedures</span>
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link collapsed" routerLink="/technicien/update-incidentTechnicien/idIncident">
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link collapsed" routerLink="/technicien/update-procedureTechnicien/idProcedure">
     </a>
   </li>
   <!-- End Dashboard Nav -->

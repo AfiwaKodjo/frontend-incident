@@ -5,6 +5,7 @@ import { AuthService } from 'src/app/auth.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { MesRoles } from 'src/app/mes-roles';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -39,7 +40,7 @@ import { MesRoles } from 'src/app/mes-roles';
             <form class="row g-3 " #myForm="ngForm" (ngSubmit)="login()">
 
               <div class="col-12">
-                <label for="email" class="form-label">Email *</label>
+                <label for="email" class="form-label">Email </label>
                 <div class="input-group has-validation">
                   <span class="input-group-text" id="inputGroupPrepend">@</span>
                   <input type="email" name="email" class="form-control" id="email" placeholder="pat@gmail.com" [(ngModel)]="email"  required email>                
@@ -49,7 +50,7 @@ import { MesRoles } from 'src/app/mes-roles';
               </div>
 
               <div class="col-12">
-                <label for="mot_de_passe" class="form-label">Mot de Passe *</label>
+                <label for="mot_de_passe" class="form-label">Mot de Passe </label>
                 <input type="password" name="mot_de_passe" class="form-control" id="mot_de_passe" [(ngModel)]="mot_de_passe" required maxlength="8" minlength="4">
                 <div *ngIf="myForm.controls['mot_de_passe'].errors?.['required']" style="color: red;">Le mot de passe est requis.</div>
                 <div *ngIf="myForm.controls['mot_de_passe'].errors?.['maxlength']" style="color: red;">Le mot de passe doit comporter au plus 8 caractères.</div>
@@ -67,7 +68,7 @@ import { MesRoles } from 'src/app/mes-roles';
                 <button class="btn btn-primary w-100" type="submit">Connexion</button>
               </div>
               <div class="col-12">
-                <p class="small mb-0">Vous n'avez pas de compte? <a routerLink="/register" >Identification</a></p>
+                <p class="small mb-0">Vous n'avez pas de compte? <a routerLink="/register" >Inscription</a></p>
               </div>
             </form>
 
@@ -140,7 +141,7 @@ export class LoginComponent {
     this.authService.login(this.email, this.mot_de_passe, this.role)
       .subscribe(
         (response) => {
-          alert('Connexion réussie !');         
+          //alert('Connexion réussie !');         
           let role = response.role;
           console.log(response)
           localStorage.setItem('token', response.token)
@@ -148,21 +149,63 @@ export class LoginComponent {
             (response2:any)=>{
               localStorage.setItem('roles',JSON.stringify(response2.authorities))
               role = response2.authorities;
+              let isAdmin = false;
+              let isTechnicien = false;
+              let isDirecteur = false;
+              let isResponsable = false;
               role.forEach((role1:any) => {
                 console.log(role1)
                 if (role1.authority==='ROLE_ADMIN'){
+                  isAdmin = true;
                   this.router.navigate(['/admin/dashboard']);
-                }else if(role1.authority==='ROLE_TECHNICIEN'){
-                  this.router.navigate(['/technicien/dashboardTechnicien']);
+                }else if(role1.authority==='ROLE_TECHNICIEN'){ 
+                  isTechnicien = true;
+                  this.router.navigate(['/technicien/incidentTechnicien']);
                 }else if(role1.authority==='ROLE_RESPONSABLE'){
-                  this.router.navigate(['/responsable/dashboardResponsable'])
+                  isResponsable = true;
+                  this.router.navigate(['/responsable/incidentResponsable'])
                 }else if(role1.authority==='ROLE_DIRECTEUR'){
-                  this.router.navigate(['/directeur/dashboardDirecteur'])
-                }else
+                  isDirecteur = true;
+                  this.router.navigate(['/directeur/incidentDirecteur'])
+                }else if(role1.authority==='ROLE_ATTENTE')
                 {
-                  console.log('merci')
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Vous êtes en attente !!. Nous vous reviendrons.'
+                  });
+                  this.router.navigate([''])
                 }
               });
+
+              if (isAdmin) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Succès',
+                  text: 'Connexion réussie !'
+                });
+              }
+              if (isTechnicien) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Succès',
+                  text: 'Connexion réussie !'
+                });
+              }
+              if (isDirecteur) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Succès',
+                  text: 'Connexion réussie !'
+                });
+              }
+              if (isResponsable) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Succès',
+                  text: 'Connexion réussie !'
+                });
+              }
 
             }
           )
@@ -170,32 +213,16 @@ export class LoginComponent {
         },
         error => {
           console.error(error);
-          alert('Echec lors de la connexion. Revoyez les données saisies !');
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Echec lors de la connexion. Revoyez les données saisies !'
+          });
           // Gérer les erreurs de connexion
         }
       );
   }
 
-
-
- /* login() {
-    this.authService.login(this.email, this.mot_de_passe).subscribe(
-      response => {
-        // Enregistrez le jeton JWT dans le stockage local (localStorage)
-        localStorage.setItem('token', response.token);
-        alert('Connexion réussi !');
-        // Redirigez l'utilisateur vers la page d'accueil ou une autre page
-        this.router.navigate(['/admin']);
-        // selon votre application
-      },
-      error => {
-        console.error(error);
-        alert('Echec lors de la connexion. Patientez !');
-        // Gérez les erreurs de connexion
-      }
-    );*/
-
-   
 
   }
   

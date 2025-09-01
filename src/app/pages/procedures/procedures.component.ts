@@ -6,44 +6,58 @@ import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Utilisateurs } from '../utilisateurs/utilisateurs';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-procedures',
   standalone: true,
   imports: [CommonModule, HttpClientModule, FormsModule, ReactiveFormsModule],
   template: `
+  <section class="section dashboard">
+  <div class="row">
 
-<!--div class="row">
-        <div class="col-12 col-lg-3 mb-3 ms-auto">
-            <div class="text-center px-xl-3">
-              <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2" >Ajout procédure</button>
-            </div>
+    <!-- Left side columns -->
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="pagetitle">
+          <h1>Procédure</h1>
+          <br>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+              <li class="breadcrumb-item active">Procédure</li>
+            </ol>
+          </nav>
         </div>
-        </div-->
+      </div>          
+    </div>
+  </div>
+</section>
 
-        <div class="row">
+    <div class="row">
   <div class="col-12 col-lg-3 mb-3">
     <div class="text-center px-xl-3">
-      <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2">Ajout procédure</button>
+      <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2">Nouvelle procédure</button>
     </div>
   </div>
 
   <div class="col-lg-2  mb-3 d-flex justify-content-end ms-auto">
     <!-- Mettez ici votre barre de recherche -->
     <input class="form-control w-100" (ngModelChange)="searchProcedures(key.value )" #key="ngModel" ngModel
-     type="search" placeholder="Search procedure..."  id="searchNom" name="key"  required>
+     type="search" placeholder=" RECHERCHE..."  id="searchNom" name="key"  required>
   </div>
 </div>
 
      
    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+   <h2>Liste des procédures</h2>
    <table class="table table-dark table-striped" id='main-container'>
   <thead>
     <tr>
-      <th scope="col">Libellé Procédure</th>
-      <th scope="col">Nom Procédure</th>
-      <th scope="col">Acteur</th>
-      <th scope="col">Rôle</th>
+    <th scope="col">Nom Procédure</th>
+      <th scope="col">Description Procédure</th>
+      <!-- <th scope="col">Agent</th> -->
+      <!-- <th scope="col">Rôle</th> -->
       <th scope="col">Actions</th>
     </tr>
   </thead>
@@ -51,11 +65,11 @@ import { Router } from '@angular/router';
     <tr *ngFor="let procedure of procedures">
       <td><h2>{{procedure.nomProcedure}}</h2></td>
       <td><h2>{{procedure.libelleProcedure}}</h2></td>
-      <td><h2>{{procedure.utilisateur.nom}}</h2></td>
-      <td><h2>{{procedure.utilisateur.role}}</h2></td>
+      <!-- <td><h2>{{procedure.utilisateur.nom}}</h2></td> -->
+      <!-- <td><h2>{{procedure.utilisateur.role}}</h2></td> -->
       <td>
       <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0" (click)="updateProcedure(procedure.idProcedure)"><i class="fa fa-edit" style="color: white;"></i> </button>
-      <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0 mx-1"><i class="fa fa-trash" style="color: red;" (click)="onOpenModal(procedure,'delete')" data-placement="top" data-toggle="tooltip" data-original-title="Delete"></i> </button>
+      <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-0 mx-1" (click)="onOpenModal(procedure,'delete')" data-placement="top" data-toggle="tooltip" data-original-title="Delete"><i class="fa fa-trash" style="color: red;" ></i> </button>
       </td>
     </tr>
     <tr>
@@ -81,27 +95,19 @@ import { Router } from '@angular/router';
                   <div class="col">
                     <div class="row">
                       <div class="col">
-                      <div class="form-group">
+                      <!--div class="form-group">
                           <label>Insérez un chiffre</label>
                           <input class="form-control" type="number" name="idProcedure" id="idProcedure" min="1" placeholder="Chiffre" [(ngModel)]="procedure.idProcedure">
-                      </div>
-                      <br>
+                      </div-->
+                      <!--br-->
                         <div class="form-group">
                           <label>Nom de la procédure</label>
                           <input class="form-control" type="text" name="nomProcedure" placeholder="Nom procédure" id="nomProcedure" [(ngModel)]="procedure.nomProcedure">
                         </div>
                         <br>
                         <div class="form-group">
-                          <label>Libellé de la procédure</label>
+                          <label>Description de la procédure</label>
                           <textarea class="form-control" type="textarea" name="libelleProcedure" placeholder="Décrivez la procédure" id="libelleProcedure" rows="3" [(ngModel)]="procedure.libelleProcedure"></textarea>
-                        <h3><b>Utilisateur</b></h3>
-                        <div class="form-group">
-                          <label for="utilisateur" class="col-form-label col-sm-2">Utilisateur</label>
-                          <select [(ngModel)]="procedure.utilisateur" class="form-control" name="utilisateur">
-                            <option [ngValue]="undefined">--Sélectionnez un utilisateur--</option>
-                            <option *ngFor="let utilisateur of utilisateurs" [ngValue]="utilisateur">{{utilisateur?.nom}}</option>
-                          </select>
-                        </div>    
                   <div class="col">
                     </div>
                         </div>
@@ -212,13 +218,36 @@ export class ProceduresComponent implements OnInit{
 
   onSubmit(){ 
     console.log(this.procedure);
-    let procedureModel: any = {idProcedure: this.procedure.idProcedure, nomProcedure: this.procedure.nomProcedure, libelleProcedure: this.procedure.libelleProcedure, utilisateur: {id: this.procedure.utilisateur.id, nom: this.procedure.utilisateur.nom, prenom: this.procedure.utilisateur.prenom, email: this.procedure.utilisateur.email, mot_de_passe: this.procedure.utilisateur.mot_de_passe, role: this.procedure.utilisateur.role}}
-    console.log(procedureModel)
+    let procedureModel: any = {nomProcedure: this.procedure.nomProcedure, libelleProcedure: this.procedure.libelleProcedure}
     this.proceduresService.createProcedure(procedureModel).subscribe(data =>{
       console.log(data);
       this.getProcedures();
     },
-    error => alert('La procédure a été ajoutée !!')
+    (error: HttpErrorResponse) => {
+      if (error.status === 500) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur du serveur !!'
+        });
+        this.getProcedures();
+      } else  if (error.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'La procédure a été ajoutée !!'
+        });
+        this.getProcedures();
+      }else 
+      {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur !!'
+        });
+       this.getProcedures();
+      }
+    }
     )
 
     }
@@ -230,15 +259,30 @@ export class ProceduresComponent implements OnInit{
           console.log(response);
           this.getProcedures();
         },
-        (error: HttpErrorResponse) =>{
+        (error: HttpErrorResponse) => {
           if (error.status === 500) {
-            alert("Suppression non autorisée. Revoyez le matériel !! ");
-         } else if (error.status === 200) {
-           alert("La procédure a été bien supprimée !!");
-         } else
-         {
-           alert ("Erreur !!");
-         }
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur',
+              text: 'Suppression non autorisée. Revoyez le mouvement !!'
+            });
+            this.getProcedures();
+          } else  if (error.status === 200) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Succès',
+              text: 'La procédure a été bien supprimée !!'
+            });
+            this.getProcedures();
+          }else 
+          {
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur',
+              text: 'Erreur !!'
+            });
+           this.getProcedures();
+          }
         }
   
         );
@@ -268,8 +312,9 @@ public onOpenModal(procedure: Procedure, mode: string): void{
     for (const procedure of this.procedures){
       if(procedure.nomProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1 
       || procedure.libelleProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1
-      || procedure.utilisateur.nom.toLowerCase().indexOf(key.toLowerCase()) !== -1
-      || procedure.utilisateur.role.toLowerCase().indexOf(key.toLowerCase()) !== -1){
+      //|| procedure.utilisateur.nom.toLowerCase().indexOf(key.toLowerCase()) !== -1
+      //|| procedure.utilisateur.role.toLowerCase().indexOf(key.toLowerCase()) !== -1
+      ){
         results.push(procedure);
       }
     } 

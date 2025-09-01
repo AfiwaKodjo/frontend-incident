@@ -7,6 +7,7 @@ import { AgenceService } from './agence.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Client } from '../clients/client';
 import { ClientsService } from '../clients/clients.service';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -15,16 +16,36 @@ import { ClientsService } from '../clients/clients.service';
   imports: [CommonModule, HttpClientModule, FormsModule, ReactiveFormsModule],
   providers:[AgenceService, ClientsService],
   template: `
+  <section class="section dashboard">
+  <div class="row">
+
+    <!-- Left side columns -->
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="pagetitle">
+          <h1>Agence</h1>
+          <br>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+              <li class="breadcrumb-item active">Agence</li>
+            </ol>
+          </nav>
+        </div>
+      </div>          
+    </div>
+  </div>
+</section>
 <div class="row">
         <div class="col-12 col-lg-3 mb-3">
             <div class="text-center px-xl-3">
-              <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2" >Ajout agence</button>
+              <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2" >Nouvelle agence</button>
             </div>
             </div>
             <div class="col-lg-2  mb-3 d-flex justify-content-end ms-auto">
           <!-- Mettez ici votre barre de recherche -->
           <input class="form-control w-100" (ngModelChange)="searchAgences(key.value )" #key="ngModel" ngModel
-          type="search" placeholder="Search agence..."  id="searchNom" name="key"  required>
+          type="search" placeholder=" RECHERCHE..."  id="searchNom" name="key"  required>
   </div>
         </div>
 
@@ -48,7 +69,7 @@ import { ClientsService } from '../clients/clients.service';
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title text-uppercase mb-0">Agences</h5>
+                <h5 class="card-title text-uppercase mb-0">Liste des Agences</h5>
             </div>
             <div class="table-responsive">
                 <table class="table no-wrap user-table mb-0">
@@ -153,11 +174,11 @@ import { ClientsService } from '../clients/clients.service';
                   <div class="col">
                     <div class="row">
                       <div class="col">
-                      <div class="form-group">
+                      <!--div class="form-group">
                           <label>Insérez un chiffre</label>
                           <input class="form-control" type="number" name="idAgence" id="idAgence" min="1" placeholder="Chiffre" [(ngModel)]="agence.idAgence">
-                      </div>
-                      <br>
+                      </div-->
+                      <!--br-->
                         <div class="form-group">
                           <label>Lieu de l'agence</label>
                           <input class="form-control" type="text" name="lieuAgence" placeholder="Lieu" id="lieuAgence" [(ngModel)]="agence.lieuAgence">
@@ -318,13 +339,37 @@ alert("Ajout réussi");
 
 onSubmit(){ 
   console.log(this.agence);
-  let agenceModel: any = {idAgence: this.agence.idAgence, lieuAgence: this.agence.lieuAgence, telephoneAgence: this.agence.telephoneAgence, client: {idClient: this.agence.client.idClient, nomClient: this.agence.client.nomClient, adresseClient: this.agence.client.adresseClient, contactClient: this.agence.client.contactClient, emailClient: this.agence.client.emailClient, utilisateur:{id: this.agence.client.utilisateur.id, nom: this.agence.client.utilisateur.nom, prenom: this.agence.client.utilisateur.prenom, mot_de_passe: this.agence.client.utilisateur.mot_de_passe, email: this.agence.client.utilisateur.email, role: this.agence.client.utilisateur.role }}}
+  let agenceModel: any = {lieuAgence: this.agence.lieuAgence, telephoneAgence: this.agence.telephoneAgence, client: {idClient: this.agence.client.idClient, nomClient: this.agence.client.nomClient, adresseClient: this.agence.client.adresseClient, contactClient: this.agence.client.contactClient, emailClient: this.agence.client.emailClient, utilisateur:{id: this.agence.client.utilisateur.id, nom: this.agence.client.utilisateur.nom, prenom: this.agence.client.utilisateur.prenom, mot_de_passe: this.agence.client.utilisateur.mot_de_passe, email: this.agence.client.utilisateur.email, role: this.agence.client.utilisateur.role }}}
  console.log(agenceModel)
   this.agenceService.createAgence(agenceModel).subscribe(data =>{
     console.log(data);
     this.getAgences();
   },
-  error => alert('L\'agence a été ajoutée !!')
+  (error: HttpErrorResponse) => {
+    if (error.status === 500) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Erreur du serveur !!'
+      });
+      this.getAgences();
+    } else  if (error.status === 200) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Succès',
+        text: 'L\'agence a été ajoutée !!'
+      });
+      this.getAgences();
+    }else 
+    {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Erreur !!'
+      });
+      this.getAgences();
+    }
+  }
   )
 
   }
@@ -336,15 +381,30 @@ public onDeleteAgence(idAgence: number): void{
       console.log(response);
       this.getAgences();
     },
-    (error: HttpErrorResponse) =>{
+    (error: HttpErrorResponse) => {
       if (error.status === 500) {
-        alert("Suppression non autorisée. Revoyez l'incident !! ");
-     } else if (error.status === 200) {
-       alert("L'agence a été bien supprimée !!");
-     } else
-     {
-       alert ("Erreur !!");
-     }
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Suppression non autorisée. Revoyez l\'incident !!'
+        });
+        this.getAgences();
+      } else  if (error.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'L\'agence a été bien supprimée !!'
+        });
+        this.getAgences();
+      }else 
+      {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur !!'
+        });
+        this.getAgences();
+      }
     }
 
     );

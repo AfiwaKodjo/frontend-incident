@@ -7,6 +7,8 @@ import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UtilisateursService } from '../utilisateurs/utilisateurs.service';
 import { Utilisateurs } from '../utilisateurs/update-utilisateurs/utilisateurs';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-clients',
@@ -14,17 +16,37 @@ import { Utilisateurs } from '../utilisateurs/update-utilisateurs/utilisateurs';
   imports: [CommonModule, HttpClientModule, FormsModule, ReactiveFormsModule],
   providers: [ClientsService, UtilisateursService],
   template: `
+  <section class="section dashboard">
+  <div class="row">
+
+    <!-- Left side columns -->
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="pagetitle">
+          <h1>Client</h1>
+          <br>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+              <li class="breadcrumb-item active">Client</li>
+            </ol>
+          </nav>
+        </div>
+      </div>          
+    </div>
+  </div>
+</section>
 <div class="row">
         <div class="col-12 col-lg-3 mb-3">
             <div class="text-center px-xl-3">
-              <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2" >Ajout client</button>
+              <button class="btn btn-success btn-block" type="button" data-toggle="modal" data-target="#user-form-modal2" >Nouveau client</button>
             </div>
         </div>
 
     <div class="col-lg-2  mb-3 d-flex justify-content-end ms-auto">
     <!-- Mettez ici votre barre de recherche -->
     <input class="form-control w-100" (ngModelChange)="searchClients(key.value )" #key="ngModel" ngModel
-     type="search" placeholder="Search client..."  id="searchNom" name="key"  required>
+     type="search" placeholder=" RECHERCHE..."  id="searchNom" name="key"  required>
   </div>
         </div>
    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
@@ -37,7 +59,7 @@ import { Utilisateurs } from '../utilisateurs/update-utilisateurs/utilisateurs';
           <th>Adresse client</th>
           <th>Contact client</th>
           <th>Email client</th>
-          <th>Acteur</th>
+          <th>Technicien</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -75,11 +97,11 @@ import { Utilisateurs } from '../utilisateurs/update-utilisateurs/utilisateurs';
                   <div class="col">
                     <div class="row">
                       <div class="col">
-                      <div class="form-group">
+                      <!--div class="form-group">
                           <label>Insérez un chiffre</label>
                           <input class="form-control" type="number" name="idClient" id="idClient" min="1" placeholder="Chiffre" [(ngModel)]="client.idClient">
-                      </div>
-                      <br>
+                      </div-->
+                      <!--br-->
                         <div class="form-group">
                           <label>Nom client</label>
                           <input class="form-control" type="text" name="nomClient" placeholder="Nom client" id="nomClient" [(ngModel)]="client.nomClient">
@@ -103,9 +125,8 @@ import { Utilisateurs } from '../utilisateurs/update-utilisateurs/utilisateurs';
                         </div>
                         </div>
                          <br>
-                        <h3><b>Utilisateur</b></h3>
                         <div class="form-group">
-                          <label for="utilisateur" class="col-form-label col-sm-2">Utilisateur</label>
+                          <label for="utilisateur" class="col-form-label col-sm-2">Technicien</label>
                           <select [(ngModel)]="client.utilisateur" class="form-control" name="utilisateur">
                             <option [ngValue]="undefined">--Sélectionnez un utilisateur--</option>
                             <option *ngFor="let utilisateur of utilisateurs" [ngValue]="utilisateur">{{utilisateur.nom}}</option>
@@ -249,20 +270,46 @@ export class ClientsComponent implements OnInit{
 
   onSubmit(){ 
     console.log(this.client);
-    let clientModel: any = {idClient: this.client.idClient, nomClient: this.client.nomClient, adresseClient: this.client.adresseClient, contactClient: this.client.contactClient, emailClient: this.client.emailClient, utilisateur: {id: this.client.utilisateur.id, nom: this.client.utilisateur.nom, prenom: this.client.utilisateur.prenom, email: this.client.utilisateur.email, mot_de_passe: this.client.utilisateur.mot_de_passe, role: this.client.utilisateur.role}}
+    let clientModel: any = {nomClient: this.client.nomClient, adresseClient: this.client.adresseClient, contactClient: this.client.contactClient, emailClient: this.client.emailClient, utilisateur: {id: this.client.utilisateur.id, nom: this.client.utilisateur.nom, prenom: this.client.utilisateur.prenom, email: this.client.utilisateur.email, mot_de_passe: this.client.utilisateur.mot_de_passe, role: this.client.utilisateur.role}}
     console.log(clientModel)
-    this.clientService.createClient(clientModel).subscribe(data =>{
-      console.log(data);
-      this.getClients();
-    },
-    error => alert('Le client a été ajouté !!')
-    )
-
-    
+    this.clientService.createClient(clientModel).subscribe(
+      (data) => {
+        console.log(data);
+        this.getClients();
+      },
+      (error: HttpErrorResponse) => {
+        this.getClients();
+  
+        if (error.status === 500) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Erreur du serveur !!'
+          });
+          this.getClients();
+        } else  if (error.status === 200) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Succès',
+            text: 'Le client a été ajouté !!'
+          });
+          this.getClients();
+        }else 
+        {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Erreur !!'
+          });
+          this.getClients();
+        }
+      }
+    );
+  
     if (!this.isValidEmail(this.client1.emailClient)) {
       console.log('E-mail invalide.');
       return;
-    };
+    }
 
 
     }
@@ -271,40 +318,10 @@ export class ClientsComponent implements OnInit{
     this.router.navigate(['admin/clientDetails/id', idClient]);
   }
 
-  /*saveClient(){
-    this.clientService.createClient(this.client).subscribe(data =>{
-      console.log(data);
-      this.goToClientList();
-    },
-    error => console.log(error)
-    );
-    
-  }*/
   
   goToClientList(){
     this.router.navigate(['/admin/clients'])
   }
-
- /*onSubmit(){ 
-    //console.log(this.client);
-    //this.saveClient();
-    //console.log(this.saveClient());
-    //alert("Ajout réussi");
-    this.clientService.createClient(this.client).subscribe(data =>{
-      console.log(data);
-    },
-    error => console.log(error)
-    )
-
-    }*/
-
- /* deleteClient(idClient: number){
-    this.clientService.deleteClient(idClient).subscribe(data =>{
-      console.log(data);
-      this.getClients();
-      console.log(this.getClients());
-    })
-  }*/
 
   public onDeleteClient(idClient: number): void{
     this.clientService.deleteClient(idClient).subscribe(
@@ -312,15 +329,32 @@ export class ClientsComponent implements OnInit{
         console.log(response);
         this.getClients();
       },
-      (error: HttpErrorResponse) =>{
+      (error: HttpErrorResponse) => {
+        this.getClients();
+  
         if (error.status === 500) {
-          alert("Suppression non autorisée. Revoyez l'agence !! ");
-       } else if (error.status === 200) {
-         alert("Le client a été bien supprimé !!");
-       } else
-       {
-         alert ("Erreur !!");
-       }
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Suppression non autorisée. Revoyez l\'agence !!'
+          });
+          this.getClients();
+        } else  if (error.status === 200) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Succès',
+            text: 'Le client a été bien supprimé !! !!'
+          });
+          this.getClients();
+        }else 
+        {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Erreur !!'
+          });
+          this.getClients();
+        }
       }
 
       );

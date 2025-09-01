@@ -4,8 +4,9 @@ import { AgenceService } from '../agence.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Agence } from '../agence';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { AgencesComponent } from '../agences.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-update-agences',
@@ -225,12 +226,41 @@ export class UpdateAgencesComponent implements OnInit{
 
 
   onSubmit(){
-    this.agenceService.updateAgence(this.idAgence, this.agence).subscribe(data =>{
+    console.log(this.idAgence);
+    console.log(this.agence);
+    let agence: any = {idAgence:this.agence.idAgence, lieuAgence: this.agence.lieuAgence, telephoneAgence: this.agence.telephoneAgence, client: {nomClient: this.agence.client.nomClient, adresseClient: this.agence.client.adresseClient, contactClient: this.agence.client.contactClient, emailClient: this.agence.client.emailClient, utilisateur:{id: this.agence.client.utilisateur.id, nom: this.agence.client.utilisateur.nom, prenom: this.agence.client.utilisateur.prenom, mot_de_passe: this.agence.client.utilisateur.mot_de_passe, email: this.agence.client.utilisateur.email, role: this.agence.client.utilisateur.role }}}
+    console.log(agence);
+    this.agenceService.updateAgence(this.idAgence, agence).subscribe(data =>{
       console.log(data);
       alert("Mise à jour réussie !! ") 
       this.goToAgenceList();
     },
-       error => console.log(error));
+    (error: HttpErrorResponse) => {
+      if (error.status === 500) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur du serveur !!'
+        });
+        this.router.navigate(['/admin/agences']);
+      } else  if (error.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'L\'agence a été mise à jour !!'
+        });
+        this.router.navigate(['/admin/agences']);
+      }else 
+      {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur !!'
+        });
+        this.router.navigate(['/admin/agences']);
+      }
+    }
+    )
 
    }
 

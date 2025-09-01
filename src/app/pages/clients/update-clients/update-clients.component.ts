@@ -1,33 +1,39 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Client } from '../client';
+import { ClientsService } from '../clients.service';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-update-clients',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, HttpClientModule],
+  providers: [ClientsService],
   template: `
  <div class="login-box">
   <h2>Mise à jour du client</h2>
-  <form>
+  <form (ngSubmit)="onSubmit()">
   <div class="user-box" >
-      <input type="number" name="idClient" id="idClient" required="" min="1">
+      <input type="number" name="idClient" id="idClient" required="" min="1" [(ngModel)]="client.idClient">
       <label>Numéro</label>
     </div>
     <div class="user-box">
-      <input type="text" name="nomClient" id="nomClient" required="" >
+      <input type="text" name="nomClient" id="nomClient" required="" [(ngModel)]="client.nomClient" >
       <label>Nom du client</label>
     </div>
     <div class="user-box">
-      <input type="text" name="adresseClient" id="adresseClient" required="" >
+      <input type="text" name="adresseClient" id="adresseClient" required="" [(ngModel)]="client.adresseClient">
       <label>Adresse du client</label>
     </div>
     <div class="user-box">
-      <input type="text" name="contactClient" id="contactClient"  required="" >
+      <input type="text" name="contactClient" id="contactClient"  required="" [(ngModel)]="client.contactClient">
       <label>Contact du client</label>
     </div>
     <div class="user-box">
-      <input type="email" name="emailClient" id="emailClient"  required="" >
+      <input type="email" name="emailClient" id="emailClient"  required="" [(ngModel)]="client.emailClient">
       <label>Email du client</label>
     </div>
     <button class="btn btn-success" type="submit">Soumettre</button>
@@ -208,6 +214,67 @@ body {
   `
   ]
 })
-export class UpdateClientsComponent {
+export class UpdateClientsComponent implements OnInit{
+
+  idClient!: number;
+  client: Client = new Client();
+
+  constructor(private clientService: ClientsService, private route: ActivatedRoute, private router: Router){ }
+
+  ngOnInit(): void {
+    this.idClient =this.route.snapshot.params['idClient'];
+
+    this.clientService.getClientById(this.idClient).subscribe(data => {
+      console.log(data);
+      this.client= data;  
+    },
+    error => console.log(error)
+    );
+  }
+
+  onSubmit(){
+    console.log(this.idClient);
+    console.log(this.client);
+    let client: any = {idClient: this.client.idClient, nomClient: this.client.nomClient, adresseClient: this.client.adresseClient, contactClient: this.client.contactClient, emailClient: this.client.emailClient, utilisateur: {id: this.client.utilisateur.id, nom: this.client.utilisateur.nom, prenom: this.client.utilisateur.prenom, email: this.client.utilisateur.email, mot_de_passe: this.client.utilisateur.mot_de_passe, role: this.client.utilisateur.role}}
+    console.log(client);
+    this.clientService.updateClient(this.idClient, client).subscribe(data =>{
+      console.log(data);
+      alert("Mise à jour réussie !! ") 
+      this.goToClientList();
+    },
+    (error: HttpErrorResponse) => {
+      if (error.status === 500) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur du serveur !!'
+        });
+        this.router.navigate(['/admin/clients']);
+      } else  if (error.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'Le client a été mis à jour !!'
+        });
+        this.router.navigate(['/admin/clients']);
+      }else 
+      {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur !!'
+        });
+        this.router.navigate(['/admin/clients']);
+      }
+    }
+    
+    
+    )
+
+  }
+
+  goToClientList(){
+    this.router.navigate(['/admin/clients']);
+  }
 
 }

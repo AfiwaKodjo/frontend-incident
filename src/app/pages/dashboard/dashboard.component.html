@@ -1,12 +1,59 @@
-<section class="section dashboard">
+<!--section class="section dashboard">
     <div class="row">
 
-      <!-- Left side columns -->
       <div class="col-lg-8">
-        <div class="row">
+        <div class="row" >
+          <main  id='main' class='main'>
+            <div class="pagetitle">
+              <h1>Tableau de bord</h1>
+              <nav>
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+                  <li class="breadcrumb-item active">Tableau de bord</li>
+                </ol>
+              </nav>
+            </div> 
+          </main>
     <app-card-details title="Sales"></app-card-details>
     <app-card-details title="Customer"></app-card-details>
+
         </div>
       </div>
     </div>
+</section-->
+
+
+<section class="section dashboard">
+  <div class="row">
+
+    <!-- Left side columns -->
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="pagetitle">
+          <h1>Tableau de bord</h1>
+          <br>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+              <li class="breadcrumb-item active">Tableau de bord</li>
+            </ol>
+          </nav>
+        </div>
+      </div>   
+    </div>
+  </div>
+  <h1><b>Statistiques</b></h1>
+  <div class="d-flex">
+    <div class="flex-fill mb-0 py-0" style="width: 120%;">
+      <app-card-details title="Utilisateurs" class="custom-card"></app-card-details>
+    </div>
+    <div class="flex-fill mb-0 py-0" style="width: 120%;">
+      <app-card-incidents title="Incidents du mois" class="custom-card"></app-card-incidents>
+    </div>
+    <div class="flex-fill mb-0 py-0" style="width: 120%;">
+      <app-card-materiels title="Matériels" class="custom-card"></app-card-materiels>
+    </div>
+  </div>
+ 
+  <canvas id="incidentChart"></canvas>
 </section>

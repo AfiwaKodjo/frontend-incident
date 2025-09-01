@@ -31,6 +31,11 @@ export class UtilisateursService {
     return this.http.get<Utilisateurs>(`${this.apiUrl}/api/utilisateurs/${id}/get`);
   }
 
+  getTechnicienInfoByNom(nom: string): Observable<Utilisateurs> {
+    return this.http.get<Utilisateurs>(`${this.apiUrl}/api/utilisateurs/{nom}`);
+  }
+  
+
   public deleteUtilisateurs(utilisateursId: number): Observable <void>{
     return this.http.delete<void>(`${this.apiUrl}/api/utilisateurs/${utilisateursId}/delete`);
   }

@@ -12,7 +12,7 @@ import { SidebarDirecteurComponent } from '../layout/sidebar-directeur/sidebar-d
     <app-header-directeur></app-header-directeur>
    <app-sidebar-directeur></app-sidebar-directeur>
     <main id='main' class='main'>
-    <div class="pagetitle">
+    <!--div class="pagetitle">
       <h1>Dashboard</h1>
       <nav>
         <ol class="breadcrumb">
@@ -20,7 +20,7 @@ import { SidebarDirecteurComponent } from '../layout/sidebar-directeur/sidebar-d
           <li class="breadcrumb-item active">Dashboard</li>
         </ol>
       </nav>
-    </div> 
+    </div--> 
      <router-outlet></router-outlet> 
   </main>
   `,

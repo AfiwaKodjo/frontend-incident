@@ -9,6 +9,26 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
+  <section class="section dashboard">
+  <div class="row">
+
+    <!-- Left side columns -->
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="pagetitle">
+          <h1>Matériel</h1>
+          <br>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+              <li class="breadcrumb-item active">Matériel</li>
+            </ol>
+          </nav>
+        </div>
+      </div>          
+    </div>
+  </div>
+</section>
   <div class="row">
         <div class="col-12 col-lg-3 mb-3 ml-auto">
         <!--div class="card">
@@ -22,33 +42,33 @@ import { FormsModule } from '@angular/forms';
             <div class="text-center px-xl-3">
                 <!--label>Filter par Nom:</label-->
                 <div><input type="search" (ngModelChange)="searchMateriels(key.value )" #key="ngModel" ngModel
-                 class="form-control w-100" id="searchNom " placeholder="search materiel..." name="key"  required></div>
+                 class="form-control w-100" id="searchNom " placeholder="RECHERCHE..." name="key"  required></div>
               </div>
              
             </div>
         </div>
    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-    <h2>Liste des matériels utilisés</h2>
+    <h2>Liste des matériels</h2>
    <table class="table caption-top">
   <thead class="table-dark">
     <tr>
+      <th scope="col">Image du matériel</th>
       <th scope="col">Nom du matériel</th>
       <th scope="col">Quantité du matériel</th>
-      <th scope="col">Nom de l'agent</th>
-      <th scope="col">Prénom de l'agent</th>
-      <th scope="col">Nom de la procédure</th>
-      <th scope="col">Libellé procédure</th>
+      <!-- <th scope="col">Nom de l'agent</th> -->
+      <!-- <th scope="col">Prénom de l'agent</th> -->
+      <!-- <th scope="col">Nom de la procédure</th> -->
+      <!-- <th scope="col">Description procédure</th> -->
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let materiel of materiels">
-      <td><h3>{{materiel.nomMateriel}}</h3></td>
-      <td><h3>{{materiel.quantiteMateriel}}</h3></td>
-      <td><h3>{{materiel.procedure.utilisateur.nom}}</h3></td>
-      <td><h3>{{materiel.procedure.utilisateur.prenom}}</h3></td>
-      <td><h3>{{materiel.procedure.nomProcedure}}</h3></td>
-      <td><h3>{{materiel.procedure.libelleProcedure}}</h3></td>
+  <ng-container *ngFor="let materiel of materiels">
+    <tr *ngIf="materiel.quantiteMateriel > 0">
+      <td class="align-middle"><img height="100" weight="100" [src]="host+materiel.idMateriel"></td>
+      <td class="align-middle"><h3>{{materiel.nomMateriel}}</h3></td>
+      <td class="align-middle"><h3>{{materiel.quantiteMateriel}}</h3></td>
     </tr>
+  </ng-container>
     
   </tbody>
 </table>  
@@ -98,6 +118,7 @@ import { FormsModule } from '@angular/forms';
   ]
 })
 export class MaterielsDirecteurComponent implements OnInit{
+  host = "http://localhost:8080/api/files/Images/";
   constructor(private materielsService: MaterielsService) { }
 
 
@@ -117,10 +138,11 @@ export class MaterielsDirecteurComponent implements OnInit{
       const results: Materiel[] = [];
       for (const materiel of this.materiels){
         if(materiel.nomMateriel.toLowerCase().indexOf(key.toLowerCase()) !== -1 
-        || materiel.procedure.utilisateur.nom.toLowerCase().indexOf(key.toLowerCase()) !== -1
-        || materiel.procedure.utilisateur.prenom.toLowerCase().indexOf(key.toLowerCase()) !== -1
-        || materiel.procedure.nomProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1
-        || materiel.procedure.libelleProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1){
+        //|| materiel.procedure.utilisateur.nom.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        //|| materiel.procedure.utilisateur.prenom.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        //|| materiel.procedure.nomProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        //|| materiel.procedure.libelleProcedure.toLowerCase().indexOf(key.toLowerCase()) !== -1
+        ){
           results.push(materiel);
         }
       } 

@@ -36,6 +36,21 @@ import { UpdateIncidentComponent } from './pages/incident/update-incident/update
 import { UpdateMouvementMaterielsComponent } from './pages/mouvement-materiels/update-mouvement-materiels/update-mouvement-materiels.component';
 import { UpdateMaterielsComponent } from './pages/materiels/update-materiels/update-materiels.component';
 import { UpdateProceduresComponent } from './pages/procedures/update-procedures/update-procedures.component';
+import { UpdateIncidentTechnicienComponent } from './pages/incident-technicien/update-incident-technicien/update-incident-technicien.component';
+import { UpdateProcedureTechnicienComponent } from './pages/procedures-technicien/update-procedure-technicien/update-procedure-technicien.component';
+import { MaterielsResponsableComponent } from './pages/materiels-responsable/materiels-responsable.component';
+import { ProceduresResponsableComponent } from './pages/procedures-responsable/procedures-responsable.component';
+import { ClientsResponsableComponent } from './pages/clients-responsable/clients-responsable.component';
+import { AgencesResponsableComponent } from './pages/agences-responsable/agences-responsable.component';
+import { MouvementMaterielsResponsableComponent } from './pages/mouvement-materiels-responsable/mouvement-materiels-responsable.component';
+import { UpdateIncidentResponsableComponent } from './pages/incident-responsable/update-incident-responsable/update-incident-responsable.component';
+import { UpdateMaterietResponsableComponent } from './pages/materiels-responsable/update-materiet-responsable/update-materiet-responsable.component';
+import { UpdateMouvementResponsableComponent } from './pages/mouvement-materiels-responsable/update-mouvement-responsable/update-mouvement-responsable.component';
+import { UpdateAgenceResponsableComponent } from './pages/agences-responsable/update-agence-responsable/update-agence-responsable.component';
+import { UpdateClientResponsableComponent } from './pages/clients-responsable/update-client-responsable/update-client-responsable.component';
+import { UpdateProcedureResponsableComponent } from './pages/procedures-responsable/update-procedure-responsable/update-procedure-responsable.component';
+import { IncidentDetailsTechnicienComponent } from './pages/incident-technicien/incident-details-technicien/incident-details-technicien.component';
+import { IncidentResponsableDetailsComponent } from './pages/incident-responsable/incident-responsable-details/incident-responsable-details.component';
 
 
 const routes: Routes = [
@@ -142,7 +157,6 @@ const routes: Routes = [
     {
       path: 'dashboardTechnicien',
       component: DashboardTechnicienComponent,
-
   },
 
   {
@@ -159,7 +173,18 @@ const routes: Routes = [
     path: 'proceduresTechnicien',
     component: ProceduresTechnicienComponent,
   },
-  
+  {
+    path: 'update-incidentTechnicien/idIncident/:idIncident',
+    component: UpdateIncidentTechnicienComponent,
+  },
+  {
+    path: 'update-procedureTechnicien/idProcedure/:idProcedure',
+    component: UpdateProcedureTechnicienComponent,
+  },
+
+{ path: 'incident-details/:idIncident',
+  component: IncidentDetailsTechnicienComponent
+}, 
 
   ]
 },
@@ -185,7 +210,54 @@ const routes: Routes = [
       path: 'incidentResponsable',
       component: IncidentResponsableComponent,
   },
-
+  {
+    path: 'materielsResponsable',
+    component: MaterielsResponsableComponent,
+  },
+  {
+  path: 'proceduresResponsable',
+  component: ProceduresResponsableComponent,
+  },
+  {
+    path: 'agencesResponsable',
+    component: AgencesResponsableComponent,
+  },
+  {
+      path: 'clientsResponsable',
+      component: ClientsResponsableComponent,
+  },
+  {
+    path: 'mouvement-materielsResponsable',
+    component: MouvementMaterielsResponsableComponent,
+  },  
+  {
+    path: 'update-incidentResponsable/idIncident/:idIncident',
+    component: UpdateIncidentResponsableComponent
+  },
+  {
+    path: 'update-materiels/idMateriel/:idMateriel',
+    component: UpdateMaterietResponsableComponent,
+  },
+  {
+    path: 'update-mouvements/idMouvement_Materiel/:idMouvement_Materiel',
+    component: UpdateMouvementResponsableComponent,
+  },
+  {
+    path: 'update-agences/idAgence/:idAgence',
+    component: UpdateAgenceResponsableComponent,
+  },
+  {
+    path: 'update-clients/idClient/:idClient',
+    component: UpdateClientResponsableComponent,
+  },
+  {
+    path: 'update-procedures/idProcedure/:idProcedure',
+    component: UpdateProcedureResponsableComponent,
+  },
+{ path: 'incident-detailsResponsable/:idIncident',
+  component: IncidentResponsableDetailsComponent
+},
+  
   ]
 
 },
@@ -211,6 +283,8 @@ const routes: Routes = [
       path: 'proceduresDirecteur',
       component: ProceduresDirecteurComponent,
       },
+
+       
 
   ]
 

@@ -7,6 +7,26 @@ import { CardDetailsComponent } from "../../components/card-details/card-details
     standalone: true,
     template: `
     <section class="section dashboard">
+  <div class="row">
+
+    <!-- Left side columns -->
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="pagetitle">
+          <h1>Tableau de bord</h1>
+          <br>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
+              <li class="breadcrumb-item active">Tableau de bord</li>
+            </ol>
+          </nav>
+        </div>
+      </div>          
+    </div>
+  </div>
+</section>
+    <section class="section dashboard">
     <div class="row">
 
       <!-- Left side columns -->

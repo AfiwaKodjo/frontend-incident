@@ -29,6 +29,11 @@ export class ProceduresService {
     return this.httpClient.get<Procedure>(`${this.baseURL}/${idProcedure}/get`);
   }
 
+  
+  updateProcedure(idProcedure: number, procedure: Procedure): Observable<Object>{
+    return this.httpClient.put(`${this.baseURL}/${idProcedure}/put`, procedure);
+  }
+
  public deleteProcedure(idProcedure: number): Observable<void>{
     return this.httpClient.delete<void>(`${this.baseURL}/${idProcedure}/delete`);
     }

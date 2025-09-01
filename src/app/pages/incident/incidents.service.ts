@@ -38,7 +38,8 @@ export class IncidentsService {
 
   createIncident(incident: Incident): Observable<Object>{
     return this.httpClient.post(`${this.baseURL}/post`, incident);
-  }
+  }  
+  
 
   getIncidentById(idIncident: number): Observable<Incident>{
     return this.httpClient.get<Incident>(`${this.baseURL}/${idIncident}/get`);
@@ -52,7 +53,11 @@ export class IncidentsService {
     window.print();
   }
 
- /* deleteProcedure(idProcedure: number): Observable<Object>{
-    return this.httpClient.delete(`${this.baseURL}/${idProcedure}/delete`);
-    }*/
+  updateIncident(idIncident: number, incident: Incident): Observable<Object>{
+    return this.httpClient.put(`${this.baseURL}/${idIncident}/put`, incident);
+  }
+
+  assignPriorityToIncident(idIncident: number): Observable<void> {
+    return this.httpClient.post<void>(`${this.baseURL}/assign-priority?idIncident=${idIncident}`, null);
+  }
 }

@@ -11,12 +11,12 @@ import { RouterModule } from '@angular/router';
 
 <ul class="sidebar-nav" id="sidebar-nav">
 
-  <li class="nav-item">
+  <!--li class="nav-item">
     <a class="nav-link collapsed" routerLink="/responsable/dashboardResponsable">
       <i class="bi bi-grid"></i>
-      <span>Dashboard</span>
+      <span>Tableau de bord</span>
     </a>
-  </li>
+  </li-->
   
   <li class="nav-item">
     <a class="nav-link collapsed" routerLink="/responsable/incidentResponsable">
@@ -31,29 +31,37 @@ import { RouterModule } from '@angular/router';
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link collapsed" routerLink="/responsable/incident">
+    <a class="nav-link collapsed" routerLink="/responsable/mouvement-materielsResponsable">
       <i class="bi bi-list-task"></i>
       <span>Mouvement materiels</span>
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link collapsed" routerLink="/responsable/incident">
+    <a class="nav-link collapsed" routerLink="/responsable/agencesResponsable">
       <i class="bi bi-geo-alt"></i>
       <span>Agences</span>
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link collapsed" routerLink="/responsable/incident">
+    <a class="nav-link collapsed" routerLink="/responsable/clientsResponsable">
       <i class="bi bi-buildings"></i>
       <span>Clients</span>
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link collapsed" routerLink="/responsable/incident">
+    <a class="nav-link collapsed" routerLink="/responsable/proceduresResponsable">
       <i class="bi bi-book"></i>
       <span>Procedures</span>
     </a>
   </li>
+  <li class="nav-item">
+    <a class="nav-link collapsed" routerLink="/responsable/update-incidentResponsable/idIncident">
+    </a>
+  </li>
+  <li class="nav-item">
+        <a class="nav-link collapsed  d-none" routerLink="/responsable/update-materiels/idMateriel">
+        </a>       
+      </li>
   <!-- End Dashboard Nav -->
 
   <!--li class="nav-item">

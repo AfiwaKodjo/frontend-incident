@@ -21,15 +21,28 @@ export class MaterielsService {
     return this.httpClient.get<Procedure[]>(`http://localhost:8080/api/procedures/get`);
   }
 
-  createMateriel(materiel: Materiel): Observable<Object>{
+ /* createMateriel(materiel: Materiel): Observable<Object>{
     return this.httpClient.post(`${this.baseURL}/post`, materiel);
+  }*/   //vrai
+
+
+  createMateriel(materielData: FormData): Observable<any> {
+    return this.httpClient.post(`${this.baseURL}/post`, materielData);
   }
+  
 
   getMaterielById(idMateriel: number): Observable<Materiel>{
     return this.httpClient.get<Materiel>(`${this.baseURL}/${idMateriel}/get`);
   }
 
+  updateMateriel(idMateriel: number, materiel: Materiel): Observable<Object>{
+    return this.httpClient.put(`${this.baseURL}/${idMateriel}/put`, materiel);
+  }
+
+
   public deleteMateriel(idMateriel: number): Observable <void>{
     return this.httpClient.delete<void>(`${this.baseURL}/${idMateriel}/delete`)};
+
+    
 
 }

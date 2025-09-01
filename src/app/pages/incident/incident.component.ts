@@ -14,6 +14,15 @@ import { Client } from '../clients/client';
 import { Utilisateurs } from '../utilisateurs/update-utilisateurs/utilisateurs';
 import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { MesPriorites } from './mes-priorites';
+import { MesStatuts } from './mes-statuts';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import Swal from 'sweetalert2';
+
+
+
+
 
 
 @Component({
@@ -36,6 +45,8 @@ export class IncidentComponent implements OnInit{
   idProcedure!: number;
   incident: Incident = new Incident();
 
+  currentDate = new Date();
+
   agences: Agence[] = [];
 
   procedures: Procedure[] = [];
@@ -55,6 +66,7 @@ export class IncidentComponent implements OnInit{
     this.incidentsService.getClients().subscribe(response => this.clients = response);
     this.incidentsService.getUtilisateurs().subscribe(response => this.utilisateurs = response);
 
+    
 
   }
 
@@ -65,22 +77,50 @@ export class IncidentComponent implements OnInit{
   }
 
   onSubmit(){ 
-    let incidentModel: any = {idIncident: this.incident.idIncident, nomIncident: this.incident.nomIncident,
+    let incidentModel: any = {nomIncident: this.incident.nomIncident,
        descriptionIncident: this.incident.descriptionIncident, dateCreationIncident: this.incident.dateCreationIncident,
-       dateClotureIncident: this.incident.dateClotureIncident,prioriteIncident: this.incident.prioriteIncident, statutIncident: this.incident.statutIncident, canalIncident: this.incident.canalIncident,
-       agence: {idAgence: this.incident.agence.idAgence, lieuAgence: this.incident.agence.lieuAgence, telephoneAgence: this.incident.agence.telephoneAgence, client:{idClient: this.incident.agence.client.idClient, nomClient: this.incident.agence.client.nomClient, adresseClient: this.incident.agence.client.adresseClient, contactClient: this.incident.agence.client.contactClient, emailClient: this.incident.agence.client.emailClient,
-       utilisateur: {id: this.incident.agence.client.utilisateur.id, nom: this.incident.agence.client.utilisateur.nom, prenom: this.incident.agence.client.utilisateur.prenom, mot_de_passe: this.incident.agence.client.utilisateur.mot_de_passe, email: this.incident.agence.client.utilisateur.email, role: this.incident.agence.client.utilisateur.role}}},
-       procedure: {idProcedure: this.incident.procedure.idProcedure, nomProcedure: this.incident.procedure.nomProcedure, libelleProcedure: this.incident.procedure.libelleProcedure, utilisateur: {id: this.incident.procedure.utilisateur.id, nom: this.incident.procedure.utilisateur.nom, prenom: this.incident.procedure.utilisateur.prenom, mot_de_passe: this.incident.procedure.utilisateur.mot_de_passe, email: this.incident.procedure.utilisateur.email, role: this.incident.agence.client.utilisateur.role}},
+       dateClotureIncident: this.incident.dateClotureIncident,prioriteIncident: this.incident.prioriteIncident, statutIncident: this.incident.statutIncident,
+        canalIncident: this.incident.canalIncident,
+       agence: {idAgence: this.incident.agence.idAgence, lieuAgence: this.incident.agence.lieuAgence, telephoneAgence: this.incident.agence.telephoneAgence,
+       client:{idClient: this.incident.agence.client.idClient, nomClient: this.incident.agence.client.nomClient, adresseClient: this.incident.agence.client.adresseClient,
+      contactClient: this.incident.agence.client.contactClient, emailClient: this.incident.agence.client.emailClient,
+       utilisateur: {id: this.incident.agence.client.utilisateur.id, nom: this.incident.agence.client.utilisateur.nom, 
+        prenom: this.incident.agence.client.utilisateur.prenom,
+        mot_de_passe: this.incident.agence.client.utilisateur.mot_de_passe, email: this.incident.agence.client.utilisateur.email,
+         role: this.incident.agence.client.utilisateur.role}}},
+       procedure: {idProcedure: this.incident.procedure.idProcedure, nomProcedure: this.incident.procedure.nomProcedure,
+         libelleProcedure: this.incident.procedure.libelleProcedure},
       }
-    //console.log(incidentModel)
-    //console.log(this.incident.dateClotureIncident)
    this.incidentsService.createIncident(incidentModel).subscribe(data =>{
       console.log(data);
       this.getIncidents();
     },
-    _error => alert('L\'incident a été ajouté !!')
+    (error: HttpErrorResponse) => {
+      if (error.status === 500) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur du serveur!! '
+        });
+        this.getIncidents();
+      } else  if (error.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Succès',
+          text: 'L\'incident a été ajouté et envoyé avec succès!!'
+        });
+        this.getIncidents();
+      }else 
+      {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur !!'
+        });
+        this.getIncidents();
+      }
+    }
     )
-
     }
 
 
@@ -94,16 +134,32 @@ export class IncidentComponent implements OnInit{
           console.log(response);
           this.getIncidents();
         },
-        (error: HttpErrorResponse) =>{
-          if (error.status === 500) {
-           alert("Suppression non autorisée. Revoyez le mouvement !! ");
-        } else if (error.status === 200) {
-          alert("L'incident a été bien supprimé !!");
-        } else
+      (error: HttpErrorResponse) => {
+        if (error.status === 500) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Suppression non autorisée. Revoyez le mouvement !! '
+          });
+          this.getIncidents();
+        } else  if (error.status === 200) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Succès',
+            text: 'L\'incident a été bien supprimé !!'
+          });
+          this.getIncidents();
+        }else 
         {
-          alert ("Erreur !!");
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Erreur !!'
+          });
+          this.getIncidents();
         }
       }
+    
         );
       
     }
@@ -123,27 +179,144 @@ export class IncidentComponent implements OnInit{
       button.click();
      }
 
-   
-    public searchIncidents(key: string): void{
+   public searchIncidents(key: string): void {
       console.log(key);
-        const results: Incident[] = [];
-        for (const incident of this.incidents){
-          if(incident.nomIncident.toLowerCase().indexOf(key.toLowerCase()) !== -1 
-          || incident.agence.client.nomClient.toLowerCase().indexOf(key.toLowerCase()) !== -1
-          || incident.agence.lieuAgence.toLowerCase().indexOf(key.toLowerCase()) !== -1
-          || incident.agence.client.utilisateur.nom.toLowerCase().indexOf(key.toLowerCase()) !== -1){
-            results.push(incident);
+      const results: Incident[] = [];
+      const lowercaseKey = key.toLowerCase(); // Convertir la clé en minuscules
+      
+      for (const incident of this.incidents) {
+          if (
+              incident.nomIncident.toLowerCase().includes(lowercaseKey) ||
+              incident.dateCreationIncident?.toString().toLowerCase().includes(lowercaseKey) ||
+              incident.dateClotureIncident?.toString().toLowerCase().includes(lowercaseKey) ||
+              incident.prioriteIncident.toString().toLowerCase().includes(lowercaseKey) ||
+              incident.canalIncident.toString().toLowerCase().includes(lowercaseKey) ||
+              incident.statutIncident.toString().toLowerCase().includes(lowercaseKey) ||
+              incident.agence.client.nomClient.toLowerCase().includes(lowercaseKey) ||
+              incident.agence.lieuAgence.toLowerCase().includes(lowercaseKey) ||
+              incident.agence.telephoneAgence.toLowerCase().includes(lowercaseKey) ||
+              incident.agence.client.utilisateur.nom.toLowerCase().includes(lowercaseKey)
+          ) {
+              results.push(incident);
           }
-        } 
+      } 
+      
       this.incidents = results;
-        if(results.length === 0 || !key){
+      
+      if (results.length === 0 || !key) {
           this.getIncidents();
-        }
-    
-    }
+      }
+  }
+  
+
 
 updateIncident(idIncident: number){
   this.router.navigate(['admin/update-incidents/idIncident', idIncident]);
     }    
+
+    assignPriority(idIncident: number): void {
+      this.incidentsService.assignPriorityToIncident(idIncident).subscribe(
+        () => {
+          alert('Incident envoyé avec succès !');
+          this.getIncidents(); // Rafraîchir la liste des incidents
+        },
+      (error: HttpErrorResponse) => {
+        if (error.status === 500) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Erreur du serveur !! '
+          });
+          this.getIncidents();
+        } else  if (error.status === 200) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Succès',
+            text: 'Incident envoyé avec succès !'
+          });
+          this.getIncidents();
+        }else 
+        {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Erreur !!'
+          });
+          this.getIncidents();
+        }
+      }
+      );
+    }
+
+ // Formater la date actuelle au format attendu par datetime-local
+ formattedCurrentDate = this.formatDate(this.currentDate);
+
+ // Calculer la date maximale (date et heure actuelles)
+ maxDate = this.formatDate(this.currentDate);
+
+ // Formater la date actuelle au format attendu par datetime-local
+ minDate = this.formatDate(this.currentDate);
+
+ private formatDate(date: Date): string {
+   const year = date.getFullYear();
+   const month = this.addZero(date.getMonth() + 1);
+   const day = this.addZero(date.getDate());
+   const hours = this.addZero(date.getHours());
+   const minutes = this.addZero(date.getMinutes());
+   return `${year}-${month}-${day}T${hours}:${minutes}`;
+ }
+
+ private addZero(value: number): string {
+   return value < 10 ? `0${value}` : `${value}`;
+ }
+
+
+
+ generatePDF() {
+  const doc = new jsPDF('landscape');
+  const table = this.generateTableData();
+  const title = 'Liste des incidents';
+  doc.setFontSize(16); // Taille de la police
+  doc.setFont('helvetica', 'bold');
+  doc.text(title, 10, 10);
+  
+// @ts-ignore
+  doc.autoTable({
+      head: [['Nom', 'Canal', 'Priorité', 'Client', 'Agence', 'Téléphone', 'Statut', 'Date de création', 'Date de clôture', 'Technicien']],
+      body: table,
+  });
+
+  doc.save('liste_incidents.pdf');
+}
+
+
+generateTableData() {
+  const tableData = [];
+
+  for (const incident of this.incidents) {
+      const rowData = [
+          incident.nomIncident,
+          incident.canalIncident,
+          incident.prioriteIncident,
+          incident.agence.client.nomClient,
+          incident.agence.lieuAgence,
+          incident.agence.telephoneAgence,
+          incident.statutIncident,
+          incident.dateCreationIncident, // Convertir la date en chaîne de caractères
+          incident.dateClotureIncident, // Convertir la date en chaîne de caractères
+          incident.agence.client.utilisateur.nom,
+      ];
+      tableData.push(rowData);
+  }
+
+  return tableData;
+}
+
+
+
+
+
+
+
 
 }

@@ -40,4 +40,36 @@ body{
 .demo-inline-calendar-card {
     width: 300px;
   }
+
+
+  /* Styles pour la table */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid #ccc; /* Ajout de la bordure au tableau */
+    border-radius: 10px; /* Arrondir les coins */
+    overflow: hidden; /* Masquer les coins arrondis des éléments internes */
+}
+
+/* Styles pour les en-têtes de colonnes */
+.custom-table th {
+    background-color: #f2f2f2;
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+/* Styles pour les lignes de la table */
+.custom-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+/* Style pour les lignes non clôturées */
+.unclosed-incident {
+    background-color: rgba(255, 0, 0, 0.5);
+}
+
   

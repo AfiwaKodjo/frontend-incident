@@ -16,7 +16,7 @@ import { IncidentComponent } from '../incident.component';
 <div class="row">
         <div class="col-12 col-lg-3 mb-3 ms-auto">
             <div class="text-center px-xl-3">
-              <button class="btn btn-success btn-block" type="button" (click)="imprimerPage()" ><i class="bi bi-box-arrow-in-down" (click)="imprimerPage()">Imprimer la page</i></button>
+              <button class="btn btn-success btn-block no-print" type="button" (click)="imprimerPage()" ><i class="bi bi-box-arrow-in-down">Imprimer la page</i></button>
             </div>
         </div>
         </div>
@@ -31,15 +31,15 @@ import { IncidentComponent } from '../incident.component';
                             <img class="img-fluid rounded-circle" style="width:70px;" src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="dashboard-user">
                         </div>
                         <div class="col">
-                            <h5><b>{{incident.agence.client.utilisateur.nom}}</b></h5>
-                            <span>{{incident.agence.client.utilisateur.role}}</span>
+                            <h5><b>{{incident.agence?.client?.utilisateur?.nom}}</b></h5>
+                            <span>{{incident.agence?.client?.utilisateur?.role}}</span>
                         </div>
                     </div>
                     <ul class="task-list">
                         <li>
                             <i class="task-icon bg-c-green"></i>
                             <h6>Nom de l'incident :<span class="float-right text-muted">Début : {{incident.dateCreationIncident}}</span></h6>
-                            <span class="float-right text-muted">Fin: {{incident.dateClotureIncident}}</span>
+                            <span *ngIf="incident.dateClotureIncident" class="float-right text-muted">Fin: {{incident.dateClotureIncident}}</span>
 
                             <p class="text-muted">{{incident.nomIncident}}</p>
                         </li>
@@ -51,12 +51,12 @@ import { IncidentComponent } from '../incident.component';
                         <li>
                             <i class="task-icon bg-c-green"></i>
                             <h6>Nom de la procédure :</h6>
-                            <p class="text-muted">{{incident.procedure.nomProcedure}}</p>
+                            <p class="text-muted">{{incident.procedure?.nomProcedure}}</p>
                         </li>
                         <li>
                             <i class="task-icon bg-c-green"></i>
                             <h6>Description de la procédure utilisée :</h6>
-                            <p class="text-muted">{{incident.procedure.libelleProcedure}}</p>
+                            <p class="text-muted">{{incident.procedure?.libelleProcedure}}</p>
                         </li>
                         
                         
@@ -244,6 +244,96 @@ import { IncidentComponent } from '../incident.component';
 h6 {
     font-size: 14px;
 }
+
+@media print {
+      .no-print {
+        display: none;
+      }
+    }
+
+
+/*nouveau*/
+
+    /* Ajustements pour l'impression */
+    @media print {
+  body {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+  }
+  
+  .no-print {
+    display: none;
+  }
+  
+  .card {
+    margin-bottom: 0;
+    border: none;
+    box-shadow: none;
+  }
+  
+  /* En-tête d'impression */
+  @page {
+    margin: 1.5cm;
+  }
+  
+  .print-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .print-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  /* Pied de page d'impression */
+  .print-footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+  }
+}
+
+/* Styles supplémentaires pour améliorer l'apparence */
+.container {
+  background-color: grey;
+  padding: 20px;
+}
+
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card .card-block {
+  padding: 20px;
+}
+
+.task-list li {
+  position: relative;
+  padding-left: 40px;
+  margin-bottom: 20px;
+}
+
+.task-icon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #04a9f5;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+
   `
   ]
 })

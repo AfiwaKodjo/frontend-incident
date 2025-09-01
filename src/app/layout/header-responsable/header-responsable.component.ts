@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/auth.service';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MouvementMaterielsService } from 'src/app/pages/mouvement-materiels/mouvement-materiels.service';
 
 @Component({
   selector: 'app-header-responsable',
@@ -36,19 +37,19 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       <a class="nav-link nav-icon search-bar-toggle " href="#">
         <i class="bi bi-search"></i>
       </a>
-    </li><!-- End Search Icon-->
+    </li>
 
-    <!--li class="nav-item dropdown">
+    <li class="nav-item dropdown">
 
-      <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+      <a class="nav-link nav-icon" href="#" data-toggle="dropdown">
         <i class="bi bi-bell"></i>
-        <span class="badge bg-primary badge-number">4</span>
+        <span class="badge bg-primary badge-number"> {{nombreDemandesEnAttente }}</span>
       </a>
 
       <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
         <li class="dropdown-header">
-          You have 4 new notifications
-          <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+          
+          <a [routerLink]="['/responsable/mouvement-materielsResponsable']"><span class="badge rounded-pill bg-primary p-2 ms-2">Voir tout</span></a>
         </li>
         <li>
           <hr class="dropdown-divider">
@@ -57,9 +58,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
         <li class="notification-item">
           <i class="bi bi-exclamation-circle text-warning"></i>
           <div>
-            <h4>Lorem Ipsum</h4>
-            <p>Quae dolorem earum veritatis oditseno</p>
-            <p>30 min. ago</p>
+            <h4>Demandes en attente</h4>
+            <p style="color: brown;">Nombres de demande de sortie:   {{nombreDemandesEnAttente }}</p>
           </div>
         </li>
 
@@ -67,51 +67,11 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
           <hr class="dropdown-divider">
         </li>
 
-        <li class="notification-item">
-          <i class="bi bi-x-circle text-danger"></i>
-          <div>
-            <h4>Atque rerum nesciunt</h4>
-            <p>Quae dolorem earum veritatis oditseno</p>
-            <p>1 hr. ago</p>
-          </div>
-        </li>
-
         <li>
-          <hr class="dropdown-divider">
-        </li>
-
-        <li class="notification-item">
-          <i class="bi bi-check-circle text-success"></i>
-          <div>
-            <h4>Sit rerum fuga</h4>
-            <p>Quae dolorem earum veritatis oditseno</p>
-            <p>2 hrs. ago</p>
-          </div>
-        </li>
-
-        <li>
-          <hr class="dropdown-divider">
-        </li>
-
-        <li class="notification-item">
-          <i class="bi bi-info-circle text-primary"></i>
-          <div>
-            <h4>Dicta reprehenderit</h4>
-            <p>Quae dolorem earum veritatis oditseno</p>
-            <p>4 hrs. ago</p>
-          </div>
-        </li>
-
-        <li>
-          <hr class="dropdown-divider">
-        </li>
-        <li class="dropdown-footer">
-          <a href="#">Show all notifications</a>
-        </li>
 
       </ul>
 
-    </li-->
+    </li>
 
     <!--li class="nav-item dropdown">
 
@@ -205,9 +165,17 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
   styles: [
   ]
 })
-export class HeaderResponsableComponent {
+export class HeaderResponsableComponent implements OnInit{
   router: any;
-  constructor(private authService: AuthService) { }
+  nombreDemandesEnAttente: number = 0;
+  mouvementMateriels: any[] = []
+  constructor(private authService: AuthService, private mouvementMaterielService: MouvementMaterielsService) { }
+  ngOnInit(): void {
+    this.getMouvementsEnAttente();
+   /* setInterval(() => {
+      this.getMouvementsEnAttente();
+    }, 1000);*/
+  }
   toggle(){
     const element = document.body as HTMLBodyElement
     element.classList.toggle('toggle-sidebar')
@@ -228,5 +196,32 @@ export class HeaderResponsableComponent {
         }
       );
   }
+
+
+
+ /* getMouvementsEnAttente() {
+    this.mouvementMaterielService.getMouvementMateriels().subscribe(
+      (mouvementMateriels) => {
+        this.nombreDemandesEnAttente = mouvementMateriels.filter(
+          (mouvement) =>
+            mouvement.libelleMouvement_Materiel === 'SORTIE' &&
+            mouvement.statut === 'En attente de validation'
+        ).length;
+        this.getMouvementsEnAttente();
+      }
+    );
+  }*/
+
+  getMouvementsEnAttente() {
+    this.mouvementMaterielService.getMouvementMateriels().subscribe(
+      (mouvementMateriels) => {
+        this.nombreDemandesEnAttente = mouvementMateriels.filter(
+          (mouvement) =>
+            mouvement.libelleMouvement_Materiel === 'SORTIE' &&
+            mouvement.statut === 'En attente de validation'
+        ).length;
+      }
+    );
+}
 
 }

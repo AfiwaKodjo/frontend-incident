@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { HeaderComponent } from './layout/header/header.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
-import { TableComponent } from './components/table/table.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ProjetInterceptor } from './projet.interceptor';
@@ -29,7 +28,6 @@ export class AppComponent {
     AppRoutingModule,
     HeaderComponent,
     SidebarComponent,
-    TableComponent,
     BrowserAnimationsModule,
     FormsModule,
  
