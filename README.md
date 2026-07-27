@@ -1,31 +1,43 @@
-# GestionIncidents
+# Frontend - Application de gestion des incidents
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.2.
+## Présentation du projet
 
-## Development server
+Ce projet correspond à la partie frontend d'une application de gestion des incidents.
+L'objectif est de permettre aux utilisateurs de déclarer, consulter et suivre le traitement des incidents afin de faciliter leur gestion et leur suivi.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Objectifs
 
-## Code scaffolding
+- Centraliser les demandes d'incidents ;
+- Faciliter le suivi de leur état d'avancement ;
+- Améliorer la communication entre les utilisateurs et les équipes chargées du traitement.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Fonctionnalités principales
 
-## Build
+- Authentification des utilisateurs ;
+- Création d'un incident ;
+- Consultation de la liste des incidents ;
+- Modification du statut d'un incident ;
+- Consultation des informations détaillées d'un incident.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Technologies utilisées
 
-## Running unit tests
+- Angular 16
+- TypeScript
+- HTML / CSS
+- Services Angular
+- Communication avec une API REST
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Architecture du projet
 
-## Running end-to-end tests
+L'application est organisée selon une séparation des responsabilités :
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- Components : gestion de l'affichage et des interactions utilisateurs ;
+- Services : gestion des appels API et de la logique métier ;
+- Models : représentation des données manipulées.
 
-## Further help
+## Installation et lancement
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
-=======
-# frontend-incident
-Frontend de l'application
->>>>>>> e64a364e1db9e038c57607b2ae8b4401409bafee
+### Installation des dépendances
+
+```bash
+npm install
