@@ -58,7 +58,8 @@ npm install
 
 ### 1. Démarrer le backend
 
-Lancer le projet backend Spring Boot (voir son README).
+Lancer le projet backend Spring Boot (voir son README Gestion-des-incident
+).
 
 Par défaut, l'API est accessible sur :
 
