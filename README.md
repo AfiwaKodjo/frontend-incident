@@ -79,7 +79,3 @@ Puis ouvrir le navigateur à l'adresse :
 ```
 http://localhost:4200
 ```
-
-## Auteur
-
-Afiwa Emikonjo
