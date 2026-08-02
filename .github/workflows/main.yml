@@ -26,7 +26,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Tester le backend avec Maven
-        working-directory: backend
+        working-directory: API-de-gestion-des-incidents
         run: mvn test
 
 
@@ -44,7 +44,6 @@ jobs:
           node-version: '20'
 
       - name: Installer les dépendances Angular
-        working-directory: frontend
         run: npm install
 
       - name: Construire l'application Angular
