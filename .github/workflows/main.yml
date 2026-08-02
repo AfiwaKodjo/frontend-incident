@@ -1,0 +1,52 @@
+name: Incident Management CI
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  backend-test:
+    name: Test Spring Boot Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Tester le backend avec Maven
+        working-directory: backend
+        run: mvn test
+
+
+  frontend-build:
+    name: Build Angular Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Installer les dépendances Angular
+        working-directory: frontend
+        run: npm install
+
+      - name: Construire l'application Angular
+        working-directory: frontend
+        run: npm run build
