@@ -47,5 +47,4 @@ jobs:
         run: npm install
 
       - name: Construire l'application Angular
-        working-directory: frontend
         run: npm run build
